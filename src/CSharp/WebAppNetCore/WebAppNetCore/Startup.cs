@@ -29,13 +29,6 @@ namespace WebAppNetCore
         {
             services.AddMvc();
 
-            services.AddAuthentication(SharedOptions =>
-            {
-                SharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                SharedOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                SharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            });
-
             services.ConfigureOpenIdServices(Configuration);
         }
 

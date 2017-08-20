@@ -13,7 +13,12 @@ namespace WebAppNetCore
     {
         public static IServiceCollection ConfigureOpenIdServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.
+            services.AddAuthentication(options =>
+            {
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
             .AddCookie()
             .AddOpenIdConnect(connectOptions => InitializeConnectOptions(connectOptions, configuration));
 
@@ -45,8 +50,7 @@ namespace WebAppNetCore
                 OnTokenResponseReceived = async (context) =>
                 {
                     Console.WriteLine("OnTokenResponseReceived.");
-
-                    //accessToken = context.TokenEndpointResponse.AccessToken;
+                    
                     await Task.FromResult(0);
                 },
                 OnRemoteFailure = async (context) =>
@@ -91,11 +95,6 @@ namespace WebAppNetCore
             connectOptions.ProtocolValidator.RequireNonce = false;
 
             connectOptions.BackchannelHttpHandler = HttpClientHandlerProvider.Create();
-
-            //connectOptions.TokenValidationParameters.SignatureValidator = (string token, TokenValidationParameters validationParameters) =>
-            //{
-            //    return new JwtSecurityToken(accessToken);
-            //};
         }
     }
 }

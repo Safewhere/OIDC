@@ -89,7 +89,7 @@ namespace WebAppNetCore
             }
 
             connectOptions.TokenValidationParameters.IssuerSigningKey = new X509SecurityKey(configuration.IssuerSigningKey());
-            connectOptions.TokenValidationParameters.ValidateAudience = true;
+            connectOptions.TokenValidationParameters.ValidateAudience = true;   // by default, when we don't explicitly set ValidAudience, it is set to ClientId
             connectOptions.TokenValidationParameters.ValidateIssuer = true;
             connectOptions.TokenValidationParameters.ValidIssuer = configuration["OpenIdConnectOptions:ClaimsIssuer"];
             connectOptions.ProtocolValidator.RequireNonce = false;

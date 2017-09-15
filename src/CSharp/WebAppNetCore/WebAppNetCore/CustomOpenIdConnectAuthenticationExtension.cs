@@ -33,6 +33,7 @@ namespace WebAppNetCore
             connectOptions.UseTokenLifetime = true;
             connectOptions.SaveTokens = true;
             connectOptions.ClaimsIssuer = configuration["OpenIdConnectOptions:ClaimsIssuer"];
+            connectOptions.GetClaimsFromUserInfoEndpoint = true;
             connectOptions.Configuration = new OpenIdConnectConfiguration()
             {
                 AuthorizationEndpoint = configuration.AuthorizationEndpoint(),

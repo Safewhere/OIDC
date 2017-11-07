@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace WebAppNetCore
 {
@@ -93,8 +94,8 @@ namespace WebAppNetCore
             connectOptions.TokenValidationParameters.ValidateAudience = true;   // by default, when we don't explicitly set ValidAudience, it is set to ClientId
             connectOptions.TokenValidationParameters.ValidateIssuer = true;
             connectOptions.TokenValidationParameters.ValidIssuer = configuration["OpenIdConnectOptions:ClaimsIssuer"];
+            connectOptions.TokenValidationParameters.NameClaimType = ClaimTypes.NameIdentifier;
             connectOptions.ProtocolValidator.RequireNonce = false;
-
             connectOptions.BackchannelHttpHandler = HttpClientHandlerProvider.Create();
         }
     }

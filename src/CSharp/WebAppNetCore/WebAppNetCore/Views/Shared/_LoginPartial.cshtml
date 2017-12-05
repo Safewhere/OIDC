@@ -6,7 +6,10 @@
         <li class="navbar-text">
             Hello, @User.Identity.Name!
         </li>
+
         <li><a href="@ViewData["EditMyProfileUri"]?origin=@ViewData["Origin"]" class="trigger">Edit My Profile</a></li>
+
+
         <li><a asp-area="" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
     </ul>
 }

@@ -25,6 +25,7 @@ namespace WebAppNetCore.Controllers
         public IActionResult Index()
         {
             ViewData["EditMyProfileUri"] = Configuration.EditMyProfileUri();
+
             ViewData["Origin"] = new UriBuilder(Request.Scheme, Request.Host.Host, Request.Host.Port.Value).ToString();
 
             return View();

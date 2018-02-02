@@ -93,7 +93,7 @@ namespace WebAppNetCore
             connectOptions.TokenValidationParameters.ValidateAudience = true;   // by default, when we don't explicitly set ValidAudience, it is set to ClientId
             connectOptions.TokenValidationParameters.ValidateIssuer = true;
             connectOptions.TokenValidationParameters.ValidIssuer = configuration["OpenIdConnectOptions:ClaimsIssuer"];
-            connectOptions.ProtocolValidator.RequireNonce = false;
+            connectOptions.ProtocolValidator.RequireNonce = bool.Parse(configuration["OpenIdConnectOptions:RequireNonce"]);
 
             connectOptions.BackchannelHttpHandler = HttpClientHandlerProvider.Create();
         }

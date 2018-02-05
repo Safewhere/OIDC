@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace WebAppNetCore
 {
@@ -94,7 +95,7 @@ namespace WebAppNetCore
             connectOptions.TokenValidationParameters.ValidateIssuer = true;
             connectOptions.TokenValidationParameters.ValidIssuer = configuration["OpenIdConnectOptions:ClaimsIssuer"];
             connectOptions.ProtocolValidator.RequireNonce = bool.Parse(configuration["OpenIdConnectOptions:RequireNonce"]);
-
+            connectOptions.TokenValidationParameters.NameClaimType = ClaimTypes.NameIdentifier;
             connectOptions.BackchannelHttpHandler = HttpClientHandlerProvider.Create();
         }
     }

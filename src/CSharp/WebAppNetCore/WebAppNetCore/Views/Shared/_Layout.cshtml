@@ -15,6 +15,9 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+
+    <link rel="stylesheet" href="~/css/iziModal.min.css" />
+
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -66,6 +69,25 @@
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
+
+    <script src="~/lib/iziModal.min.js"></script>
+
+    <div id="modal">
+    </div>
+
+    <script>
+        $("#modal").iziModal({
+            iframe: true,
+            iframeHeight: 800,
+            width: 800,
+            closeButton: true
+        });
+
+        $(document).on('click', '.trigger', function (event) {
+            event.preventDefault();
+            $('#modal').iziModal('open', event);
+        });
+    </script>
 
     @RenderSection("Scripts", required: false)
 </body>

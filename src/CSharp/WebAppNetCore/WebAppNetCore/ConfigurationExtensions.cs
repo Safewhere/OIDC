@@ -35,5 +35,10 @@ namespace WebAppNetCore
         {
             return new X509Certificate2(Convert.FromBase64String(configuration["OpenIdConnectOptions:TokenValidationParameters:IssuerSigningKey"]));
         }
+
+        public static Uri EditMyProfileUri(this IConfiguration configuration)
+        {
+            return new Uri(configuration["OpenIdConnectOptions:EditMyProfileUri"]);
+        }
     }
 }

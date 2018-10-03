@@ -1,4 +1,7 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Text;
 using System.Windows;
 
 namespace WpfDesktopApp
@@ -13,76 +16,41 @@ namespace WpfDesktopApp
         public MainWindow()
         {
             InitializeComponent();
-            //GetTodoList(true);
         }
         
-        private async void AddTodoItem(object sender, RoutedEventArgs e)
+        private void AddClaims(ClaimsPrincipal claimsPrincipal)
         {
-            //if (string.IsNullOrEmpty(TodoText.Text))
-            //{
-            //    MessageBox.Show("Please enter a value for the To Do item name");
-            //    return;
-            //}
+            if (claimsPrincipal == null)
+                return;
 
-            ////
-            //// Get an access token to call the To Do service.
-            ////
-            //AuthenticationResult result = null;
-            //try
-            //{
-            //    result = await authContext.AcquireTokenAsync(todoListResourceId, clientId, redirectUri, new PlatformParameters(PromptBehavior.Never));
-            //}
-            //catch (AdalException ex)
-            //{
-            //    // There is no access token in the cache, so prompt the user to sign-in.
-            //    if (ex.ErrorCode == "user_interaction_required")
-            //    {
-            //        MessageBox.Show("Please sign in first");
-            //        SignInButton.Content = "Sign In";
-            //    }
-            //    else
-            //    {
-            //        // An unexpected error occurred.
-            //        string message = ex.Message;
-            //        if (ex.InnerException != null)
-            //        {
-            //            message += "Error Code: " + ex.ErrorCode + "Inner Exception : " + ex.InnerException.Message;
-            //        }
+            StringBuilder sb = new StringBuilder();
 
-            //        MessageBox.Show(message);
-            //    }
+            foreach (Claim claim in claimsPrincipal.Claims)
+            {
+                sb.AppendLine($"{claim.Type} - {claim.Value}");
+            }
 
-            //    return;
-            //}
-
-            ////
-            //// Call the To Do service.
-            ////
-
-            //// Once the token has been returned by ADAL, add it to the http authorization header, before making the call to access the To Do service.
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
-
-            //// Forms encode Todo item, to POST to the todo list web api.
-            //HttpContent content = new FormUrlEncodedContent(new[] { new KeyValuePair<string, string>("Title", TodoText.Text) });
-
-            //// Call the To Do list service.
-            //HttpResponseMessage response = await httpClient.PostAsync(todoListBaseAddress + "/api/todolist", content);
-
-            //if (response.IsSuccessStatusCode)
-            //{
-            //    TodoText.Text = "";
-            //    GetTodoList();
-            //}
-            //else
-            //{
-            //    MessageBox.Show("An error occurred : " + response.ReasonPhrase);
-            //}
+            AppendLogData(sb.ToString());
         }
 
         private async void SignIn(object sender = null, RoutedEventArgs args = null)
         {
-            var interactiveLogon = new InteractiveLogon();
-            await interactiveLogon.DoLogon(this);
+            textBox.Text = string.Empty;
+            var interactiveLogon = new InteractiveLogon(AppendLogData);
+            AuthenticationResult authenticationResult = await interactiveLogon.DoLogon(this);
+            if (authenticationResult == null)
+                return;
+
+            // Can do: use authenticationResult.AccessToken to access a resource server
+            AddClaims(authenticationResult.ClaimsPrincipal);
+        }
+
+        private void AppendLogData(string newLine)
+        {
+            this.textBox.Text += Environment.NewLine;
+            this.textBox.Text += "----------------------------";
+            this.textBox.Text += Environment.NewLine;
+            this.textBox.Text += newLine;
         }
     }
 }

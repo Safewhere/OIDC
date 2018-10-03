@@ -21,6 +21,11 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace WpfDesktopApp
 {
@@ -29,10 +34,17 @@ namespace WpfDesktopApp
     /// </summary>
     public class InteractiveLogon
     {
-        public async Task DoLogon(MainWindow mainWindow)
+        private readonly Action<string> logListener;
+
+        public InteractiveLogon(Action<string> logListener)
+        {
+            this.logListener = logListener ?? throw new ArgumentNullException("logListener");
+        }
+
+        public async Task<AuthenticationResult> DoLogon(MainWindow mainWindow)
         {
             // Generates state and PKCE values.
-            string state = randomDataBase64url(32);
+            string state = RandomDataBase64url(32);
 
             // Creates a redirect URI using an available port on the loopback address.
             string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, ConfigurationExtensions.Port);
@@ -63,6 +75,7 @@ namespace WpfDesktopApp
 
             // Sends an HTTP response to the browser.
             var response = context.Response;
+            // TODO: replace google.com with your own landing page
             string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body>Please return to the app.</body></html>");
             var buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
             response.ContentLength64 = buffer.Length;
@@ -78,13 +91,13 @@ namespace WpfDesktopApp
             if (context.Request.QueryString.Get("error") != null)
             {
                 Output(String.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")));
-                return;
+                return null;
             }
             if (context.Request.QueryString.Get("code") == null
                 || context.Request.QueryString.Get("state") == null)
             {
                 Output("Malformed authorization response. " + context.Request.QueryString);
-                return;
+                return null;
             }
 
             // extracts the code
@@ -96,15 +109,15 @@ namespace WpfDesktopApp
             if (incoming_state != state)
             {
                 Output(String.Format("Received request with invalid state ({0})", incoming_state));
-                return;
+                return null;
             }
             Output("Authorization code: " + code);
 
             // Starts the code exchange at the Token Endpoint.
-            PerformCodeExchange(code, redirectURI);
+            return await PerformCodeExchange(code, redirectURI);
         }
 
-        async void PerformCodeExchange(string code, string redirectURI)
+        async Task<AuthenticationResult> PerformCodeExchange(string code, string redirectURI)
         {
             Output("Exchanging code for tokens...");
 
@@ -140,15 +153,33 @@ namespace WpfDesktopApp
                     // converts to dictionary
                     Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
 
-                    string access_token = tokenEndpointDecoded["access_token"];
-                    UserinfoCall(access_token);
+                    string accessToken = tokenEndpointDecoded["access_token"];
+                    JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+                    var tokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new X509SecurityKey(ConfigurationExtensions.IssuerSigningKey),
+                        ValidAudience = ConfigurationExtensions.ResourceUri,
+                        ValidIssuer = ConfigurationExtensions.Issuer
+                        // Validate a lot of other things here
+                    };
+
+                    ClaimsPrincipal claimsPrincipal = jwtSecurityTokenHandler.ValidateToken(accessToken, tokenValidationParameters, out SecurityToken dummy);
+
+                    string userInfo = await UserinfoCall(accessToken);
+                    AppendUserinfoToClaimsPrincipal(claimsPrincipal, userInfo);
+
+                    return new AuthenticationResult
+                    {
+                        AccessToken = accessToken,
+                        ClaimsPrincipal = claimsPrincipal
+                    };
                 }
             }
-            catch (WebException ex)
+            catch (WebException webException)
             {
-                if (ex.Status == WebExceptionStatus.ProtocolError)
+                if (webException.Status == WebExceptionStatus.ProtocolError)
                 {
-                    var response = ex.Response as HttpWebResponse;
+                    var response = webException.Response as HttpWebResponse;
                     if (response != null)
                     {
                         Output("HTTP: " + response.StatusCode);
@@ -162,10 +193,33 @@ namespace WpfDesktopApp
 
                 }
             }
+            catch (Exception ex)
+            {
+                Output(ex.ToString());
+            }
+
+            return null;
         }
 
+        private static void AppendUserinfoToClaimsPrincipal(ClaimsPrincipal claimsPrincipal, string userInfo)
+        {
+            ClaimsIdentity firstIdentity = (ClaimsIdentity)claimsPrincipal.Identity;
+            JObject user = JObject.Parse(userInfo);
+            foreach (KeyValuePair<string, JToken> j in user)
+            {
+                var multiValuesClaim = j.Value as JArray;
+                if (multiValuesClaim != null)
+                {
+                    multiValuesClaim.Values<string>().ToList().ForEach(v =>
+                                            firstIdentity.AddClaim(new Claim(j.Key, v)));
+                    continue;
+                }
 
-        async void UserinfoCall(string access_token)
+                firstIdentity.AddClaim(new Claim(j.Key, j.Value.Value<string>()));
+            }
+        }
+
+        public async Task<string> UserinfoCall(string access_token)
         {
             Output("Making API Call to Userinfo...");
 
@@ -186,6 +240,7 @@ namespace WpfDesktopApp
                 // reads response body
                 string userinfoResponseText = await userinfoResponseReader.ReadToEndAsync();
                 Output(userinfoResponseText);
+                return userinfoResponseText;
             }
         }
 
@@ -195,8 +250,7 @@ namespace WpfDesktopApp
         /// <param name="output">string to be appended</param>
         public void Output(string output)
         {
-            //textBoxOutput.Text = textBoxOutput.Text + output + Environment.NewLine;
-            Console.WriteLine(output);
+            logListener(output);
         }
 
         /// <summary>
@@ -204,12 +258,12 @@ namespace WpfDesktopApp
         /// </summary>
         /// <param name="length">Input length (nb. output will be longer)</param>
         /// <returns></returns>
-        public static string randomDataBase64url(uint length)
+        public static string RandomDataBase64url(uint length)
         {
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             byte[] bytes = new byte[length];
             rng.GetBytes(bytes);
-            return base64urlencodeNoPadding(bytes);
+            return Base64UrlEncodeNoPadding(bytes);
         }
 
         /// <summary>
@@ -217,7 +271,7 @@ namespace WpfDesktopApp
         /// </summary>
         /// <param name="inputStirng"></param>
         /// <returns></returns>
-        public static byte[] sha256(string inputStirng)
+        public static byte[] SHA256(string inputStirng)
         {
             byte[] bytes = Encoding.ASCII.GetBytes(inputStirng);
             SHA256Managed sha256 = new SHA256Managed();
@@ -229,7 +283,7 @@ namespace WpfDesktopApp
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public static string base64urlencodeNoPadding(byte[] buffer)
+        public static string Base64UrlEncodeNoPadding(byte[] buffer)
         {
             string base64 = Convert.ToBase64String(buffer);
 

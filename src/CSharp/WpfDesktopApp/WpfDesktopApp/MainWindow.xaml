@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfDesktopApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="572.098" Width="537.499">
     <Grid Margin="12">
         <Grid.Resources>
             <VisualBrush x:Key="TodoHint" Stretch="None" AlignmentX="Left" AlignmentY="Top">
@@ -29,14 +29,9 @@
                 </Button.Style>
 
             </Button>
-            <DataGrid x:Name="ClaimList" Margin="0,0,0,0" AutoGenerateColumns="False"  ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
-        		IsReadOnly="True" MinWidth="350"  CanUserAddRows="False" CanUserDeleteRows="False" Height="230" GridLinesVisibility="None" Background="#FFFFFFFF">
-
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Claims" Binding="{Binding Title}" Width="*"/>
-                </DataGrid.Columns>
-
-            </DataGrid>
         </StackPanel>
+        <TextBox HorizontalAlignment="Left" Height="464" Margin="10,44,0,0" TextWrapping="Wrap" Text="Error" Name="textBox" VerticalAlignment="Top" Width="487"
+         VerticalScrollBarVisibility="Visible"/>
+
     </Grid>
 </Window>

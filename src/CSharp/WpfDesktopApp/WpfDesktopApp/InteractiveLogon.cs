@@ -159,7 +159,7 @@ namespace WpfDesktopApp
                     {
                         IssuerSigningKey = new X509SecurityKey(ConfigurationExtensions.IssuerSigningKey),
                         ValidAudience = ConfigurationExtensions.ResourceUri,
-                        ValidIssuer = ConfigurationExtensions.Issuer
+                        ValidIssuer = ConfigurationExtensions.ClaimIssuer
                         // Validate a lot of other things here
                     };
 

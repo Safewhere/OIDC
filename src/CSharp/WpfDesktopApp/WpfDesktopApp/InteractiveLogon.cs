@@ -125,8 +125,8 @@ namespace WpfDesktopApp
             string tokenRequestBody = string.Format("code={0}&redirect_uri={1}&client_id={2}&client_secret={3}&scope=&grant_type=authorization_code",
                 code,
                 System.Uri.EscapeDataString(redirectURI),
-                ConfigurationExtensions.ClientId,
-                ConfigurationExtensions.ClientSecret
+                HttpUtility.UrlEncode(ConfigurationExtensions.ClientId),
+                HttpUtility.UrlEncode(ConfigurationExtensions.ClientSecret)
                 );
 
             // sends the request

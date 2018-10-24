@@ -60,7 +60,7 @@ namespace WpfDesktopApp
             string authorizationRequest = string.Format("{0}?response_type=code&scope={4}&redirect_uri={1}&client_id={2}&state={3}",
                 ConfigurationExtensions.AuthorizationEndpoint,
                 System.Uri.EscapeDataString(redirectURI),
-                ConfigurationExtensions.ClientId,
+                HttpUtility.UrlEncode(ConfigurationExtensions.ClientId),
                 state,
                 HttpUtility.UrlEncode(ConfigurationExtensions.Scope));
 

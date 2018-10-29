@@ -196,7 +196,6 @@ OIDC.supportedRequestOptions = [
 OIDC.supportedClientOptions = [
     'client_id',
     'redirect_uri'
-//    'client_secret',
 ];
 
 /**
@@ -1042,7 +1041,6 @@ OIDC.fetchJSON = function(url) {
     try {
         var request = new XMLHttpRequest();
         request.open('GET', url, false);
-		request.setRequestHeader("X-User-id","<svg/onload=alert(1)>");
         request.send(null);
 
         if (request.status === 200) {
@@ -1211,7 +1209,7 @@ OIDC.registerClient = function(redirect_uri){
           "subject_type": "public",
           "grant_types": ["implicit"],
           "response_types": ["token", "id_token"],
-          "scopes": ["read", "openid", "write"]
+          "scopes": ["read", "openid"]
       };
       var request = new XMLHttpRequest();
       request.open("POST", providerInfo['registration_endpoint'], false);

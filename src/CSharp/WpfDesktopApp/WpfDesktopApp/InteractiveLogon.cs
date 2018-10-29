@@ -60,7 +60,7 @@ namespace WpfDesktopApp
             string authorizationRequest = string.Format("{0}?response_type=code&scope={4}&redirect_uri={1}&client_id={2}&state={3}",
                 ConfigurationExtensions.AuthorizationEndpoint,
                 System.Uri.EscapeDataString(redirectURI),
-                ConfigurationExtensions.ClientId,
+                HttpUtility.UrlEncode(ConfigurationExtensions.ClientId),
                 state,
                 HttpUtility.UrlEncode(ConfigurationExtensions.Scope));
 
@@ -125,8 +125,8 @@ namespace WpfDesktopApp
             string tokenRequestBody = string.Format("code={0}&redirect_uri={1}&client_id={2}&client_secret={3}&scope=&grant_type=authorization_code",
                 code,
                 System.Uri.EscapeDataString(redirectURI),
-                ConfigurationExtensions.ClientId,
-                ConfigurationExtensions.ClientSecret
+                HttpUtility.UrlEncode(ConfigurationExtensions.ClientId),
+                HttpUtility.UrlEncode(ConfigurationExtensions.ClientSecret)
                 );
 
             // sends the request
@@ -159,7 +159,7 @@ namespace WpfDesktopApp
                     {
                         IssuerSigningKey = new X509SecurityKey(ConfigurationExtensions.IssuerSigningKey),
                         ValidAudience = ConfigurationExtensions.ResourceUri,
-                        ValidIssuer = ConfigurationExtensions.Issuer
+                        ValidIssuer = ConfigurationExtensions.ClaimsIssuer
                         // Validate a lot of other things here
                     };
 

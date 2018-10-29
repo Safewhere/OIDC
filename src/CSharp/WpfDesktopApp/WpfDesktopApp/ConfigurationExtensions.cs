@@ -11,9 +11,9 @@ namespace WpfDesktopApp
             get => ConfigurationManager.AppSettings["IssuerDomain"].TrimEnd('/');
         }
 
-        public static string Issuer
+        public static string ClaimsIssuer
         {
-            get => ConfigurationManager.AppSettings["Issuer"];
+            get => ConfigurationManager.AppSettings["ClaimsIssuer"];
         }
 
         public static string ClientId

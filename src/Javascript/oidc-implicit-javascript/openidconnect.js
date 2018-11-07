@@ -123,7 +123,8 @@ OIDC.supportedProviderOptions = [
     'jwks_uri',
     'claims_parameter_supported',
     'request_parameter_supported',
-    'jwks'
+    'jwks',
+	'userinfo_endpoint'
 
     /*
     / Reserve for future use
@@ -1159,8 +1160,7 @@ OIDC.discover = function(issuer)
 OIDC.getUserInfo = function(access_token)
 {
   try {
-      var providerURL = JSON.parse(sessionStorage['providerInfo'])['issuer']
-      var providerInfo = OIDC.discover(providerURL);
+	  var userInfoUri = JSON.parse(sessionStorage['providerInfo'])['userinfo_endpoint']
       var request = new XMLHttpRequest();
 
       /*
@@ -1168,7 +1168,7 @@ OIDC.getUserInfo = function(access_token)
        * header: application/x-www-form-urlencoded, application/form-data or text/plain for
        * Simple Requests or a different value for Preflighted Requests
        */
-      request.open('POST', providerInfo['userinfo_endpoint'], false);
+	  request.open('POST', userInfoUri, false);
       request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
       request.setRequestHeader("authorization", "Bearer " + access_token);

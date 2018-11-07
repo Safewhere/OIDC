@@ -16,7 +16,6 @@
             var userInfoClaims = JSON.parse(OIDC.getUserInfo(access_token));
             var tokenClaimsHTMLString = JSONObjToHTMLTable(tokenClaims);
             var userInfoClaimsHTMLString = JSONObjToHTMLTable(userInfoClaims);
-            //OIDC.debug(true, id_token);
 
             function print_id_token(){
                 document.getElementById("retrievedInfo").innerHTML = '<b>Id_token</b>' + tokenClaimsHTMLString +

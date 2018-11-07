@@ -8,13 +8,14 @@ All the settings are placed on implicit-test.html as follows
 - client_id
 - redirect_uri
 - providerInfo
-- scope
+- scope: it must include the 'openid' scope. Default ones are 'read', 'write' and 'openid'.
 
 Assumed that SPA sample is deployed at https://spa.safewhere.local, and Identify OAuth is at https://develop.safewhere.local/runtime/ the above settings will be
 - client_id: [a client id]
 - redirect_uri: https://spa.safewhere.local/login-callback.html
 - providerInfo: https://develop.safewhere.local/runtime/
-- scope: it depends, plus 'openid' scope. Default ones are 'read', 'write' and 'openid'.
+- scope: with the default settings on spa's app.config, those scopes: 'read', 'write', 'openid' neeeds to be added.
+- Enable settings: Allow implicit flow and Use as OpenID Connect
 
 ## Identify configuration
 There must be an OAuth 2.0 protocol configuration. More details about Identify OAuth 2.0 protocol connection can be found on https://docs.safewhere.com

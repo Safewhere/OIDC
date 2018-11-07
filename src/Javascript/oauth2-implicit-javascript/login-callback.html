@@ -11,7 +11,6 @@
         <script>
             OIDC.restoreInfo();
             var access_token = OIDC.getAccessToken();
-            OIDC.debug(true, id_token);
 
             function print_id_token(){
                 document.getElementById("retrievedInfo").innerHTML = '<b>Id_token</b>' + tokenClaimsHTMLString +

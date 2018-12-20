@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using WebAppNetCore.Models;
@@ -25,6 +26,7 @@ namespace WebAppNetCore.Controllers
         public IActionResult Index()
         {
             ViewData["EditMyProfileUri"] = Configuration.EditMyProfileUri();
+            ViewData["access_token"] = HttpContext.GetTokenAsync("access_token").Result;
 
             ViewData["Origin"] = $"{Request.Scheme}://{Request.Host.Value}";
 

@@ -18,9 +18,11 @@ namespace WebAppNetCore
             {
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+               
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddCookie()
+            
             .AddOpenIdConnect(connectOptions => InitializeConnectOptions(connectOptions, configuration));
 
             return services;
@@ -41,16 +43,22 @@ namespace WebAppNetCore
                 TokenEndpoint = configuration.TokenEndpoint(),
                 UserInfoEndpoint = configuration.UserInfoEndpoint(),
                 EndSessionEndpoint = configuration.EndSessionEndpoint(),
-                HttpLogoutSupported = true
+                HttpLogoutSupported = true,
+                
             };
             connectOptions.Events = new OpenIdConnectEvents
             {
                 OnAuthorizationCodeReceived = async (context) =>
                 {
+                    Console.WriteLine("OnAuthorizationCodeReceived.");
+                    Console.WriteLine("code = " + context.TokenEndpointRequest.Code);
                     await Task.FromResult(0);
                 },
                 OnTokenResponseReceived = async (context) =>
                 {
+                    Console.WriteLine("OnTokenResponseReceived.");
+                    Console.WriteLine("IdToken = " + context.TokenEndpointResponse.IdToken);
+                    Console.WriteLine("Token = " + context.TokenEndpointResponse.AccessToken);
                     Console.WriteLine("OnTokenResponseReceived.");
                     
                     await Task.FromResult(0);

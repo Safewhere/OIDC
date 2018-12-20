@@ -1,0 +1,39 @@
+﻿@using Nancy.Security
+@using Nancy.ViewEngines.Razor
+
+@inherits NancyRazorViewBase<string>
+
+<div style="width:90%;margin:5px">
+    @{ var principal = RenderContext.Context.GetMSOwinUser(); }
+
+    @if (principal != null && principal.Identity != null && principal.Identity.IsAuthenticated) {
+        <h1>Welcome, @principal.Identity.Name</h1>
+
+        <div class="alert alert-info" style="word-wrap: break-word;">
+            @foreach (var claim in principal.Claims)
+            {
+                if (claim.Type.StartsWith("AuthorizationEndpoint") || claim.Type.StartsWith("TokenEndpoint"))
+                {
+                    <strong>@claim.Type</strong> <br />@claim.Value
+
+                    <br />
+                }
+            }
+        </div>
+
+        if (!string.IsNullOrEmpty(Model)) {
+            <h3>Message received from the resource controller: @Model</h3>
+        }
+
+        @*<form action="~/" method="post">
+            <button class="btn btn-lg btn-warning" type="submit">Query the resource controller</button>
+        </form>*@
+
+        <a class="btn btn-lg btn-danger" href="/signout">Sign out</a>
+    }
+
+    else {
+        <h1>Welcome, anonymous</h1>
+        <a class="btn btn-lg btn-success" href="/signin">Sign in</a>
+    }
+</div>

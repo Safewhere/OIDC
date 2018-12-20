@@ -1,0 +1,29 @@
+﻿@{
+    
+}
+<div>
+    <div class="page-header">
+        <h1>Authorization response</h1>
+    </div>
+    <h2>@ViewBag.Message</h2>
+    <div class="alert alert-info" style="word-wrap: break-word;">
+        <strong>Code:</strong> @ViewBag.Code
+    </div>
+    <div class="alert alert-info" style="word-wrap: break-word;">
+        <strong>Code1:</strong> <p name="code"></p>
+    </div>
+    <div class="alert alert-warning" style="word-wrap: break-word;">
+        <strong>Error:</strong> @ViewBag.Error
+    </div>
+
+    @if (ViewBag.Code != "none")
+    {
+        RouteValueDictionary queryStringDictionary = new RouteValueDictionary(Request.QueryString.AllKeys.ToDictionary(key => key, key => (object)Request.QueryString[key]));
+
+        using (Html.BeginForm("GetToken", "Home", queryStringDictionary, FormMethod.Post))
+        {
+            <input type="submit" value="Get token" class="btn btn-lg btn-primary" />
+        }
+    }
+</div>
+

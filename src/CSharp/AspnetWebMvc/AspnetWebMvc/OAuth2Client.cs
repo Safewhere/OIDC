@@ -1,4 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
+﻿/*
+ * Copyright (c) Dominick Baier.  All rights reserved.
+ * see license.txt
+ */
+
+using Newtonsoft.Json.Linq;
 using OAuth2ClientSamples.Controllers;
 using System;
 using System.Collections.Generic;

@@ -74,5 +74,17 @@ namespace AspnetWebMvc.Controllers
                 );
             return response;
         }
+
+        public ActionResult Contact()
+        {
+            ViewData["Message"] = "Safewhere contact page.";
+
+            return View();
+        }
+
+        public ActionResult About()
+        {
+            return View();
+        }
     }
 }

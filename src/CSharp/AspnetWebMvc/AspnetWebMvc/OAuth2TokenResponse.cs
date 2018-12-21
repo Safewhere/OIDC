@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace AspnetWebMvc
+﻿namespace AspnetWebMvc
 {
     public class OAuth2TokenResponse
     {

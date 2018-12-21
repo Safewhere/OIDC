@@ -1,6 +1,6 @@
 ﻿/*
  * Copyright (c) Dominick Baier.  All rights reserved.
- * see license.txt
+ * see Thinktecture.IdentityModel.License.txt
  */
 
 using Newtonsoft.Json.Linq;

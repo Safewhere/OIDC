@@ -1,101 +1,55 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Hybrid Page";
 }
 @section featured {
     <script src="../Scripts/jquery-3.3.1.js"></script>
+    <script src="../Scripts/oauth2client.js"></script>
     <div class="page-header">
         <h1>OAuth2 Client Sample</h1>
     </div>
-
 }
 
-    <div class="round">
-        <div>
-            <h4>Hybrid flow result from authorization endpoint</h4>
-        </div>
-        <div id="authorizationRequestResult">
-        </div>
-        <div>
-            <h4>Hybrid flow result from token endpoint</h4>
-        </div>
-        <div id="tokenRequestResult">
-
-        </div>
-        <br />
-
-        <div>
-            <script>
-                function log(key, value) {
-                    log("#authorizationRequestResult", key, value);
-                }
-                function log(div, key, value) {
-                    $(div).append("<div class=\"alert alert - info\" style=\"word-wrap: break-word;\"><strong>" + key + "</strong><br/>" + value + "</div>");
-                }
-
-                function HttpBearerTokenClient(token) {
-                    this.scheme = "Bearer";
-                    this.token = token;
-                }
-                HttpBearerTokenClient.prototype.get = function (url) {
-                    var scheme = this.scheme;
-                    var token = this.token;
-                    var settings = {
-                        type: "GET",
-                        url: url,
-                        dataType: "json",
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader("Authorization", scheme + " " + token);
-                        }
-                    };
-                    return $.ajax(settings);
-                }
-
-                function GetToken(code) {
-                    debugger;
-                    $.ajax({
-                        url: '/Oauth2/GetToken',
-                        data: JSON.stringify({
-                            tokenRequest: {
-                                Code: code
-                            }
-                        }),
-                        type: 'POST',
-                        contentType: 'application/json; charset=utf-8',
-                        success: function (data) {
-                            log("#tokenRequestResult", "Access token obtained: ", data.response.AccessToken);
-                            log("#tokenRequestResult", "Id token obtained: ", data.response.IdToken);
-                            log("#tokenRequestResult", "Refresh token obtained: ", data.response.RefreshToken);
-                        },
-                        error: function () {
-                        }
-                    });
-                }
-
-                $(function () {
-                    var params = {},
-                        queryString = location.hash.substring(1),
-                        regex = /([^&=]+)=([^&]*)/g,
-                        m;
-                    while (m = regex.exec(queryString)) {
-                        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-                    }
-
-                    if (params.error) {
-                        log("#authorizationRequestResult", "error: ", params.error);
-                        return;
-                    }
-                    var code = params.code;
-                    log("#authorizationRequestResult", "Code Obtained: ", code);
-
-                    var idtoken = params.id_token;
-                    log("#authorizationRequestResult", "Id Token Obtained: ", idtoken);
-
-                    var token = params.access_token;
-                    log("#authorizationRequestResult", "Access Token Obtained: ", token);
-
-                    GetToken(code);
-                });
-
-            </script>
-        </div>
+<div class="round">
+    <div>
+        <h4>Hybrid flow result from authorization endpoint</h4>
     </div>
+    <div id="authorizationRequestResult">
+    </div>
+    <div>
+        <h4>Hybrid flow result from token endpoint</h4>
+    </div>
+    <div id="tokenRequestResult">
+
+    </div>
+    <br />
+
+    <div>
+        <script>
+            $(function () {
+                var params = {},
+                    queryString = location.hash.substring(1),
+                    regex = /([^&=]+)=([^&]*)/g,
+                    m;
+                while (m = regex.exec(queryString)) {
+                    params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+                }
+
+                if (params.error) {
+                    log("#authorizationRequestResult", "error: ", params.error);
+                    return;
+                }
+                var code = params.code;
+                log("#authorizationRequestResult", "codeid","Code Obtained: ", code);
+
+                var idtoken = params.id_token;
+                log("#authorizationRequestResult", "idtokenid","Id Token Obtained: ", idtoken);
+
+                var token = params.access_token;
+                log("#authorizationRequestResult", "accesstokenid","Access Token Obtained: ", token);
+
+                GetToken(code);
+            });
+
+        </script>
+    </div>
+</div>

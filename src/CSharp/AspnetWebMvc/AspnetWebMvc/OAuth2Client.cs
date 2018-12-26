@@ -36,13 +36,11 @@ namespace AspnetWebMvc
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
         }
 
-        internal static object CreateHybridUrl(string authority, string clientId, string scope, string redirectUri, string responseType, string state = null, string prompt=null)
+        internal static string CreateAuthorizationUrl(string authority, string clientId, string scope, string redirectUri, string responseType, string responseMode, string state = null, string prompt=null)
         {
-            var endpoint = string.Format("{0}authorize.idp", authority);
-
             string nonce = Guid.NewGuid().ToString("N");
 
-            return OAuth2Client.CreateUrl(endpoint, clientId, scope, redirectUri, responseType, state, prompt, nonce);
+            return OAuth2Client.CreateUrl(GenerateAuthorizeEndpoint(authority), clientId, scope, redirectUri, responseType, responseMode, state, prompt, nonce);
         }
 
         public OAuth2TokenResponse RequestAccessTokenCode(string code, Uri redirectUri, Dictionary<string, string> additionalProperties = null)
@@ -59,13 +57,18 @@ namespace AspnetWebMvc
             return this.CreateResponseFromJson(JObject.Parse(result.Content.ReadAsStringAsync().Result));
         }
 
+        private static string GenerateAuthorizeEndpoint(string authority)
+        {
+            return string.Format("{0}authorize.idp", authority);
+        }
+
         private static string GenerateTokenEndpoint(string authority)
         {
             var endpoint = string.Format("{0}token.idp", authority);
             return endpoint;
         }
 
-        private static string CreateUrl(string endpoint, string clientId, string scope, string redirectUri, string responseType, string state = null, string prompt = null, string nonce = null)
+        private static string CreateUrl(string endpoint, string clientId, string scope, string redirectUri, string responseType, string responseMode, string state = null, string prompt = null, string nonce = null)
         {
             string str = string.Format("{0}?client_id={1}&scope={2}&redirect_uri={3}&response_type={4}"
                 , endpoint
@@ -73,12 +76,23 @@ namespace AspnetWebMvc
                 , ApplicationSettings.UrlEncode(scope)
                 , ApplicationSettings.UrlEncode(redirectUri)
                 , ApplicationSettings.UrlEncode(responseType));
+            if (!string.IsNullOrEmpty(responseMode))
+            {
+                str = string.Format("{0}&response_mode={1}", str, ApplicationSettings.UrlEncode(responseMode));
+            }
             if (!string.IsNullOrWhiteSpace(state))
+            {
                 str = string.Format("{0}&state={1}", str, ApplicationSettings.UrlEncode(state));
+            }
+               
             if (!string.IsNullOrWhiteSpace(prompt))
+            {
                 str = string.Format("{0}&prompt={1}", str, ApplicationSettings.UrlEncode(prompt));
+            }
             if (!string.IsNullOrWhiteSpace(nonce))
+            {
                 str = string.Format("{0}&nonce={1}", str, ApplicationSettings.UrlEncode(nonce));
+            }
             return str;
         }
 
@@ -86,13 +100,13 @@ namespace AspnetWebMvc
         {
             OAuth2TokenResponse accessTokenResponse = new OAuth2TokenResponse()
             {
-                AccessToken = json["access_token"].ToString(),
-                IdToken = json["id_token"].ToString(),
+                Access_Token = json["access_token"].ToString(),
+                Id_Token = json["id_token"].ToString(),
                 TokenType = json["token_type"].ToString(),
                 ExpiresIn = int.Parse(json["expires_in"].ToString())
             };
             if (json["refresh_token"] != null)
-                accessTokenResponse.RefreshToken = json["refresh_token"].ToString();
+                accessTokenResponse.Refresh_Token = json["refresh_token"].ToString();
             return accessTokenResponse;
         }
 

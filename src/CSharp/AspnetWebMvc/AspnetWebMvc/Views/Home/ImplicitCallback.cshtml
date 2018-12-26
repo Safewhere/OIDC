@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "Implicit Page";
+}
+@section featured {
+    <script src="../Scripts/jquery-3.3.1.js"></script>
+    <script src="../Scripts/oauth2client.js"></script>
+    <div class="page-header">
+        <h1>OAuth2 Client Sample</h1>
+    </div>
+}
+
+<div class="round">
+    <div>
+        <h4>Implicit result from authorization endpoint</h4>
+    </div>
+    <div id="authorizationRequestResult">
+        @if (@ViewBag.ResponseMode == "form_post")
+        {
+            <div class="alert alert-info" style="word-wrap: break-word;">
+                <strong>Id token:</strong> @ViewBag.IdToken
+            </div>
+            if (ViewBag.AccessToken != "none")
+            {
+                <div class="alert alert-info" style="word-wrap: break-word;">
+                    <strong>Access token:</strong> @ViewBag.AccessToken
+                </div>
+            }
+        }
+    </div>
+
+    <br />
+
+    <div>
+        <script>
+            $(function () {
+                debugger;
+                if ("@ViewBag.ResponseMode" == "form_post") {
+                    log("#authorizationRequestResult", "accesstokenid", "Access Token Obtained: ", @ViewBag.IdToken);
+                    log("#authorizationRequestResult", "idtokenid", "Id Token Obtained: ", @ViewBag.AccessToken);
+                    return;
+                }
+                var params = {},
+                    queryString = location.hash.substring(1),
+                    regex = /([^&=]+)=([^&]*)/g,
+                    m;
+                while (m = regex.exec(queryString)) {
+                    params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+                }
+
+                if (params.error) {
+                    log("#authorizationRequestResult", "error: ", params.error);
+                    return;
+                }
+
+                var idtoken = params.id_token;
+                log("#authorizationRequestResult", "idtokenid", "Id Token Obtained: ", idtoken);
+
+                var token = params.access_token;
+                log("#authorizationRequestResult", "accesstokenid", "Access Token Obtained: ", token);
+            });
+
+        </script>
+    </div>
+</div>

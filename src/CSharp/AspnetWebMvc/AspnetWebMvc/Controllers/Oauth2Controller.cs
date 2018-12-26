@@ -29,5 +29,16 @@ namespace AspnetWebMvc.Controllers
             return Json(new { success = true , response });
         }
 
+        [HttpPost]
+        public ActionResult RenewToken(TokenRequest tokenRequest)
+        {
+            var client = new OAuth2Client(
+                new Uri(ApplicationSettings.Authority),
+                ApplicationSettings.ClientId,
+                ApplicationSettings.ClientSecret);
+            var response = client.RequestAccessTokenRefreshToken(tokenRequest.Code);
+            return Json(new { success = true, response });
+        }
+
     }
 }

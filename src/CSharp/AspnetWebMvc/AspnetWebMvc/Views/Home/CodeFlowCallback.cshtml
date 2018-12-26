@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "CodeFlow Page";
+}
+@section featured {
+    <script src="../Scripts/jquery-3.3.1.js"></script>
+    <script src="../Scripts/oauth2client.js"></script>
+    <div class="page-header">
+        <h1>OAuth2 Client Sample</h1>
+    </div>
+}
+    <div>
+        <script type='text/javascript'>
+            function GetTokenHandler() {
+                GetToken('@ViewBag.Code');
+                $("#btnGetToken").hide();
+                $("#btnExchangeToken").show();
+            }
+            function ExchangeTokenHandler() {
+                ExchangeToken();
+            }
+        </script>
+
+        <div class="page-header">
+            <h1>Authorization response</h1>
+        </div>
+        <h2>@ViewBag.Message</h2>
+        <div class="alert alert-info" style="word-wrap: break-word;">
+            <strong>Code:</strong> @ViewBag.Code
+        </div>
+        <div id="tokenRequestResult">
+
+        </div>
+        <div class="alert alert-warning" style="word-wrap: break-word;">
+            <strong>Error:</strong> @ViewBag.Error
+        </div>
+
+
+        @if (ViewBag.Code != "none")
+        {
+            <button id="btnGetToken" type=button onclick="GetTokenHandler()">Get Token</button> 
+            <button id="btnExchangeToken" type=button style="display:none" onclick="ExchangeTokenHandler()">Exchange Token</button>
+
+        }
+    </div>

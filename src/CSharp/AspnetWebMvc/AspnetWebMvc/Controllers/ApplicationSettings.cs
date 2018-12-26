@@ -33,6 +33,13 @@ namespace OAuth2ClientSamples.Controllers
                 return ConfigurationManager.AppSettings["IdentifyOauth2:ResponseType"];
             }
         }
+        public static string ResponseMode
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IdentifyOauth2:ResponseMode"];
+            }
+        }
         public static string Scope
         {
             get

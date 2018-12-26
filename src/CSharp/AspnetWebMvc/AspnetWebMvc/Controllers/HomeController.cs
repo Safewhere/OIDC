@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Helpers;
+using System.Web.Http;
 using System.Web.Mvc;
 
 namespace AspnetWebMvc.Controllers
@@ -12,16 +13,39 @@ namespace AspnetWebMvc.Controllers
     {
         public ActionResult Index()
         {
-            var url = OAuth2Client.CreateHybridUrl(
+            var hybridUrl = OAuth2Client.CreateAuthorizationUrl(
                 ApplicationSettings.Authority,
                 ApplicationSettings.ClientId,
                 ApplicationSettings.Scope,
                 ApplicationSettings.RedirectUri, 
                 ApplicationSettings.ResponseType,
+                string.Empty,
                 ApplicationSettings.State, 
                 ApplicationSettings.Prompt);
 
-            ViewBag.AuthorizeUrl = url;
+            var codeFlowUrl = OAuth2Client.CreateAuthorizationUrl(
+                ApplicationSettings.Authority,
+                ApplicationSettings.ClientId,
+                ApplicationSettings.Scope,
+                ApplicationSettings.RedirectUri,
+                "code",
+                ApplicationSettings.ResponseMode,
+                ApplicationSettings.State,
+                ApplicationSettings.Prompt);
+
+            var implicitUrl = OAuth2Client.CreateAuthorizationUrl(
+               ApplicationSettings.Authority,
+               ApplicationSettings.ClientId,
+               ApplicationSettings.Scope,
+               ApplicationSettings.RedirectUri,
+               ApplicationSettings.ResponseType,
+               ApplicationSettings.ResponseMode,
+               ApplicationSettings.State,
+               ApplicationSettings.Prompt);
+
+            ViewBag.HybridAuthorizeUrl = hybridUrl;
+            ViewBag.CodeFlowAuthorizeUrl = codeFlowUrl;
+            ViewBag.ImplicitFlowAuthorizeUrl = implicitUrl;
             return View();
         }
 
@@ -37,6 +61,36 @@ namespace AspnetWebMvc.Controllers
             return View("HybridCallback");
         }
 
+        public ActionResult ImplicitCallback(OAuth2TokenResponse response)
+        {
+            if (ApplicationSettings.ResponseMode == "form_post")
+            {
+                ViewBag.AccessToken = string.IsNullOrEmpty(response.Access_Token) ? "none" : response.Access_Token;
+                ViewBag.IdToken = string.IsNullOrEmpty(response.Id_Token) ? "none" : response.Id_Token;
+                ViewBag.Error = Request.QueryString["error"] ?? "none";
+            }
+            ViewBag.ResponseMode = ApplicationSettings.ResponseMode;
+
+            return View("ImplicitCallback");
+        }
+
+        public ActionResult CodeFlowCallback(OAuth2TokenResponse response)
+        {
+            ViewBag.Message = "Code received.";
+            if (ApplicationSettings.ResponseMode == "form_post")
+            {
+                ViewBag.Code = string.IsNullOrEmpty(response.Code) ? "none" : response.Code;
+                ViewBag.Error = Request.QueryString["error"] ?? "none";
+            }
+            else
+            {
+                ViewBag.Code = Request.QueryString["code"] ?? "none";
+                ViewBag.Error = Request.QueryString["error"] ?? "none";
+            }
+
+            return View("CodeFlowCallback");
+        }
+
         public ActionResult TokenCallback()
         {
             ViewBag.Message = "Token received.";
@@ -47,7 +101,7 @@ namespace AspnetWebMvc.Controllers
         }
         
         
-        [HttpPost]
+        [System.Web.Mvc.HttpPost]
         public ActionResult RenewToken(string refreshToken)
         {
             var client = new OAuth2Client(
@@ -56,23 +110,6 @@ namespace AspnetWebMvc.Controllers
                 ApplicationSettings.ClientSecret);
             var response = client.RequestAccessTokenRefreshToken(refreshToken);
             return View("TokenReceived", response);
-        }
-
-        private OAuth2TokenResponse NegotiateToken(string code)
-        {
-            var client = new OAuth2Client(
-               new Uri(ApplicationSettings.Authority),
-               ApplicationSettings.ClientId,
-               ApplicationSettings.ClientSecret);
-
-            var additionalProperties = new Dictionary<string, string> { { "state", ApplicationSettings.State } };
-
-            var response = client.RequestAccessTokenCode(
-                code,
-                new Uri(ApplicationSettings.RedirectUri),
-                additionalProperties
-                );
-            return response;
         }
 
         public ActionResult Contact()

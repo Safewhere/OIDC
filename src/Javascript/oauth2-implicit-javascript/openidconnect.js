@@ -735,7 +735,7 @@ OIDC.login = function(reqOptions) {
     + '?response_type=' + response_type
     + '&scope=' + scope
     + '&nonce=' + nonce
-    + '&client_id=' + this['client_id']
+    + '&client_id=' + encodeURIComponent(this['client_id'])
     + '&redirect_uri=' + this['redirect_uri']
     + '&state=' + state
     + optParams;

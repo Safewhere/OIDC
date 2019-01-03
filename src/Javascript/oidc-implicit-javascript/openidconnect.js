@@ -730,13 +730,12 @@ OIDC.login = function(reqOptions) {
     optParams += '&max_age=' + max_age;
     if(claims)
     optParams += '&claims=' + JSON.stringify(claims);
-
     var url =
     this['authorization_endpoint']
     + '?response_type=' + response_type
     + '&scope=' + scope
     + '&nonce=' + nonce
-    + '&client_id=' + this['client_id']
+    + '&client_id=' + encodeURIComponent(this['client_id'])
     + '&redirect_uri=' + this['redirect_uri']
     + '&state=' + state
     + optParams;

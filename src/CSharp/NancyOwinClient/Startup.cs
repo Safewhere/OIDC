@@ -89,9 +89,17 @@ namespace NancyOwinClient
                     AuthorizationCodeReceived = async notification =>
                     {
                         notification.AuthenticationTicket.Identity.AddClaim(new Claim("AuthorizationEndpointResponse_Code", notification.ProtocolMessage.Code));
-                        notification.AuthenticationTicket.Identity.AddClaim(new Claim("AuthorizationEndpointResponse_IdToken", notification.ProtocolMessage.IdToken));
-                        notification.AuthenticationTicket.Identity.AddClaim(new Claim("AuthorizationEndpointResponse_AccessToken", notification.ProtocolMessage.AccessToken));
-                        
+
+                        if (!string.IsNullOrEmpty(notification.ProtocolMessage.IdToken))
+                        {
+                            notification.AuthenticationTicket.Identity.AddClaim(new Claim("AuthorizationEndpointResponse_IdToken", notification.ProtocolMessage.IdToken));
+                        }
+
+                        if (!string.IsNullOrEmpty(notification.ProtocolMessage.AccessToken))
+                        {
+                            notification.AuthenticationTicket.Identity.AddClaim(new Claim("AuthorizationEndpointResponse_AccessToken", notification.ProtocolMessage.AccessToken));
+                        }
+
                         if (string.IsNullOrEmpty(notification.AuthenticationTicket.Identity.Name))
                         {
                             var sub = notification.AuthenticationTicket.Identity.Claims.FirstOrDefault(x => x.Type == "sub");

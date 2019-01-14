@@ -16,13 +16,22 @@
     <div id="authorizationRequestResult">
         @if (@ViewBag.ResponseMode == "form_post")
         {
-            <div class="alert alert-info" style="word-wrap: break-word;">
-                <strong>Id token:</strong> @ViewBag.IdToken
-            </div>
-            if (ViewBag.AccessToken != "none")
+            if (ViewBag.IdToken != "none")
             {
                 <div class="alert alert-info" style="word-wrap: break-word;">
+                    <strong>Id token:</strong> @ViewBag.IdToken
+                </div>
+                <div class="alert alert-info" style="word-wrap: break-word;">
                     <strong>Access token:</strong> @ViewBag.AccessToken
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning" style="word-wrap: break-word;">
+                    <strong>Error:</strong> @ViewBag.Error
+                </div>
+                <div class="alert alert-warning" style="word-wrap: break-word;">
+                    Error description: @ViewBag.ErrorDescription
                 </div>
             }
         }
@@ -33,10 +42,7 @@
     <div>
         <script>
             $(function () {
-                debugger;
                 if ("@ViewBag.ResponseMode" == "form_post") {
-                    log("#authorizationRequestResult", "accesstokenid", "Access Token Obtained: ", @ViewBag.IdToken);
-                    log("#authorizationRequestResult", "idtokenid", "Id Token Obtained: ", @ViewBag.AccessToken);
                     return;
                 }
                 var params = {},
@@ -48,7 +54,8 @@
                 }
 
                 if (params.error) {
-                    log("#authorizationRequestResult", "error: ", params.error);
+                    log("#authorizationRequestResult","errorid", "error: ", params.error);
+                    log("#authorizationRequestResult", "errorDescriptionid", "error: ", params.error_description);
                     return;
                 }
 

@@ -12,6 +12,8 @@ namespace AspnetWebMvc.Controllers
         public class TokenRequest
         {
             public string Code { get; set; }
+            public string ClientId { get; set; }
+            public string ReturnUrl { get; set; }
         }
 
         [HttpPost]
@@ -19,12 +21,12 @@ namespace AspnetWebMvc.Controllers
         {
             var client = new OAuth2Client(
                 new Uri(ApplicationSettings.Authority),
-                ApplicationSettings.ClientId,
+                tokenRequest.ClientId,
                 ApplicationSettings.ClientSecret);
 
             var response = client.RequestAccessTokenCode(
                 tokenRequest.Code,
-                new Uri(ApplicationSettings.RedirectUri));
+                new Uri(tokenRequest.ReturnUrl));
 
             return Json(new { success = true , response });
         }
@@ -34,7 +36,7 @@ namespace AspnetWebMvc.Controllers
         {
             var client = new OAuth2Client(
                 new Uri(ApplicationSettings.Authority),
-                ApplicationSettings.ClientId,
+                tokenRequest.ClientId,
                 ApplicationSettings.ClientSecret);
             var response = client.RequestAccessTokenRefreshToken(tokenRequest.Code);
             return Json(new { success = true, response });

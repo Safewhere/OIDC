@@ -209,7 +209,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\HybridCallback.cshtml" />
     <Content Include="Views\Home\Greeting.cshtml" />
-    <Content Include="Views\Home\TokenReceived.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\HybridEndResult.cshtml" />
     <Content Include="Views\Home\CodeFlowCallback.cshtml" />

@@ -24,5 +24,11 @@ namespace AspnetWebMvc
         public int ExpiresIn { get; set; }
 
         public string Code { get; set; }
+
+        public string Error { get; set; }
+
+        public string Error_Description { get; set; }
+
+        public string State { get; set; }
     }
 }

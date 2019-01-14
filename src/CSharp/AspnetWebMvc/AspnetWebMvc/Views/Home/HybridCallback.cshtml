@@ -35,7 +35,8 @@
                 }
 
                 if (params.error) {
-                    log("#authorizationRequestResult", "error: ", params.error);
+                    log("#authorizationRequestResult", "errorId", "error: ", params.error);
+                    log("#authorizationRequestResult", "errorDescriptionId", "error description: ", params.error_description);
                     return;
                 }
                 var code = params.code;
@@ -47,7 +48,7 @@
                 var token = params.access_token;
                 log("#authorizationRequestResult", "accesstokenid","Access Token Obtained: ", token);
 
-                GetToken(code);
+                GetToken(code, '@ViewBag.ClientId', '@ViewBag.ReturnUrl');
             });
 
         </script>

@@ -11,7 +11,7 @@
     <div>
         <script type='text/javascript'>
             function GetTokenHandler() {
-                GetToken('@ViewBag.Code');
+                GetToken('@ViewBag.Code', '@ViewBag.ClientId', '@ViewBag.ReturnUrl');
                 $("#btnGetToken").hide();
                 $("#btnExchangeToken").show();
             }
@@ -24,21 +24,28 @@
             <h1>Authorization response</h1>
         </div>
         <h2>@ViewBag.Message</h2>
-        <div class="alert alert-info" style="word-wrap: break-word;">
-            <strong>Code:</strong> @ViewBag.Code
-        </div>
-        <div id="tokenRequestResult">
 
-        </div>
-        <div class="alert alert-warning" style="word-wrap: break-word;">
-            <strong>Error:</strong> @ViewBag.Error
-        </div>
 
 
         @if (ViewBag.Code != "none")
         {
-            <button id="btnGetToken" type=button onclick="GetTokenHandler()">Get Token</button> 
-            <button id="btnExchangeToken" type=button style="display:none" onclick="ExchangeTokenHandler()">Exchange Token</button>
+            <div class="alert alert-info" style="word-wrap: break-word;">
+                <strong>Code:</strong> @ViewBag.Code
+            </div>
+            <div id="tokenRequestResult">
 
+            </div>
+            <div style="display:none" id="clientId">@ViewBag.ClientId</div>
+            <button id="btnGetToken" type=button onclick="GetTokenHandler()">Get Token</button>
+            <button id="btnExchangeToken" type=button style="display:none" onclick="ExchangeTokenHandler()">Exchange Token</button>
+        }
+        else
+        {
+            <div class="alert alert-warning" style="word-wrap: break-word;">
+                <strong>Error:</strong> @ViewBag.Error
+            </div>
+            <div class="alert alert-warning" style="word-wrap: break-word;">
+                Error description: @ViewBag.ErrorDescription
+            </div>
         }
     </div>

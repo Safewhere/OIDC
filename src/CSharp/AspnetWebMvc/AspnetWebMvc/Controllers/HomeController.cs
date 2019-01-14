@@ -15,19 +15,19 @@ namespace AspnetWebMvc.Controllers
         {
             var hybridUrl = OAuth2Client.CreateAuthorizationUrl(
                 ApplicationSettings.Authority,
-                ApplicationSettings.ClientId,
+                ApplicationSettings.HybridClientId,
                 ApplicationSettings.Scope,
-                ApplicationSettings.RedirectUri, 
-                ApplicationSettings.ResponseType,
+                ApplicationSettings.HybridRedirectUri, 
+                ApplicationSettings.HybridResponseType,
                 string.Empty,
                 ApplicationSettings.State, 
                 ApplicationSettings.Prompt);
 
             var codeFlowUrl = OAuth2Client.CreateAuthorizationUrl(
                 ApplicationSettings.Authority,
-                ApplicationSettings.ClientId,
+                ApplicationSettings.CodeFlowClientId,
                 ApplicationSettings.Scope,
-                ApplicationSettings.RedirectUri,
+                ApplicationSettings.CodeFlowRedirectUri,
                 "code",
                 ApplicationSettings.ResponseMode,
                 ApplicationSettings.State,
@@ -35,10 +35,10 @@ namespace AspnetWebMvc.Controllers
 
             var implicitUrl = OAuth2Client.CreateAuthorizationUrl(
                ApplicationSettings.Authority,
-               ApplicationSettings.ClientId,
+               ApplicationSettings.ImplicitClientId,
                ApplicationSettings.Scope,
-               ApplicationSettings.RedirectUri,
-               ApplicationSettings.ResponseType,
+               ApplicationSettings.ImplicitRedirectUri,
+               ApplicationSettings.ImplicitResponseType,
                ApplicationSettings.ResponseMode,
                ApplicationSettings.State,
                ApplicationSettings.Prompt);
@@ -52,12 +52,8 @@ namespace AspnetWebMvc.Controllers
         public ActionResult HybridCallback(string Code)
         {
             ViewBag.Message = "Code received.";
-            string url = HttpContext.Request.RawUrl;
-            var query = HttpUtility.ParseQueryString(Request.Url.AbsoluteUri);
-
-            ViewBag.Code = Request.QueryString["code"] ?? "none";
-            ViewBag.Error = Request.QueryString["error"] ?? "none";
-
+            ViewBag.ReturnUrl = ApplicationSettings.HybridRedirectUri;
+ 
             return View("HybridCallback");
         }
 
@@ -67,7 +63,8 @@ namespace AspnetWebMvc.Controllers
             {
                 ViewBag.AccessToken = string.IsNullOrEmpty(response.Access_Token) ? "none" : response.Access_Token;
                 ViewBag.IdToken = string.IsNullOrEmpty(response.Id_Token) ? "none" : response.Id_Token;
-                ViewBag.Error = Request.QueryString["error"] ?? "none";
+                ViewBag.Error = response.Error ?? "none";
+                ViewBag.ErrorDescription = response.Error_Description ?? "none";
             }
             ViewBag.ResponseMode = ApplicationSettings.ResponseMode;
 
@@ -76,16 +73,20 @@ namespace AspnetWebMvc.Controllers
 
         public ActionResult CodeFlowCallback(OAuth2TokenResponse response)
         {
-            ViewBag.Message = "Code received.";
+            ViewBag.Message = "Response received.";
+            ViewBag.ReturnUrl = ApplicationSettings.CodeFlowRedirectUri;
+            ViewBag.ClientId = ApplicationSettings.CodeFlowClientId;
             if (ApplicationSettings.ResponseMode == "form_post")
             {
                 ViewBag.Code = string.IsNullOrEmpty(response.Code) ? "none" : response.Code;
-                ViewBag.Error = Request.QueryString["error"] ?? "none";
+                ViewBag.Error = response.Error ?? "none";
+                ViewBag.ErrorDescription = response.Error_Description ?? "none";
             }
             else
             {
                 ViewBag.Code = Request.QueryString["code"] ?? "none";
                 ViewBag.Error = Request.QueryString["error"] ?? "none";
+                ViewBag.ErrorDescription = Request.QueryString["error_description"] ?? "none";
             }
 
             return View("CodeFlowCallback");
@@ -98,18 +99,6 @@ namespace AspnetWebMvc.Controllers
             ViewBag.Error = Request.QueryString["error"] ?? "none";
 
             return View("CodeCallback");
-        }
-        
-        
-        [System.Web.Mvc.HttpPost]
-        public ActionResult RenewToken(string refreshToken)
-        {
-            var client = new OAuth2Client(
-                new Uri(ApplicationSettings.Authority),
-                ApplicationSettings.ClientId,
-                ApplicationSettings.ClientSecret);
-            var response = client.RequestAccessTokenRefreshToken(refreshToken);
-            return View("TokenReceived", response);
         }
 
         public ActionResult Contact()

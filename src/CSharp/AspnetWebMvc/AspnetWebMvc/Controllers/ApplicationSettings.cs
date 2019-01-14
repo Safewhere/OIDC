@@ -12,11 +12,25 @@ namespace OAuth2ClientSamples.Controllers
                 return ConfigurationManager.AppSettings["IdentifyOauth2:Authority"];
             }
         }
-        public static string ClientId
+        public static string HybridClientId
         {
             get
             {
-                return ConfigurationManager.AppSettings["IdentifyOauth2:ClientId"];
+                return ConfigurationManager.AppSettings["IdentifyOauth2:HybridClientId"];
+            }
+        }
+        public static string CodeFlowClientId
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IdentifyOauth2:CodeFlowClientId"];
+            }
+        }
+        public static string ImplicitClientId
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IdentifyOauth2:ImplicitClientId"];
             }
         }
         public static string ClientSecret
@@ -26,11 +40,18 @@ namespace OAuth2ClientSamples.Controllers
                 return ConfigurationManager.AppSettings["IdentifyOauth2:ClientSecret"];
             }
         }
-        public static string ResponseType
+        public static string HybridResponseType
         {
             get
             {
-                return ConfigurationManager.AppSettings["IdentifyOauth2:ResponseType"];
+                return ConfigurationManager.AppSettings["IdentifyOauth2:HybridResponseType"];
+            }
+        }
+        public static string ImplicitResponseType
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IdentifyOauth2:ImplicitResponseType"];
             }
         }
         public static string ResponseMode
@@ -61,11 +82,25 @@ namespace OAuth2ClientSamples.Controllers
                 return ConfigurationManager.AppSettings["IdentifyOauth2:Prompt"];
             }
         }
-        public static string RedirectUri
+        public static string HybridRedirectUri
         {
             get
             {
-                return ConfigurationManager.AppSettings["IdentifyOauth2:RedirectUri"];
+                return ConfigurationManager.AppSettings["IdentifyOauth2:HybridRedirectUri"];
+            }
+        }
+        public static string CodeFlowRedirectUri
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IdentifyOauth2:CodeFlowRedirectUri"];
+            }
+        }
+        public static string ImplicitRedirectUri
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IdentifyOauth2:ImplicitRedirectUri"];
             }
         }
         public static string PostLogoutRedirectUri

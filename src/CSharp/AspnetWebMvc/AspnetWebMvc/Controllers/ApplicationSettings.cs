@@ -110,6 +110,13 @@ namespace OAuth2ClientSamples.Controllers
                 return ConfigurationManager.AppSettings["IdentifyOauth2:PostLogoutRedirectUri"];
             }
         }
+        public static string MaxAge
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IdentifyOauth2:MaxAge"];
+            }
+        }
 
         public static string UrlEncode(string value)
         {

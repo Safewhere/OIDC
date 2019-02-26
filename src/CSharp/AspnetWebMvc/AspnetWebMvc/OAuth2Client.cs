@@ -36,11 +36,20 @@ namespace AspnetWebMvc
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
         }
 
-        internal static string CreateAuthorizationUrl(string authority, string clientId, string scope, string redirectUri, string responseType, string responseMode, string state = null, string prompt=null)
+        internal static string CreateAuthorizationUrl(string authority
+                                                        , string clientId
+                                                        , string scope
+                                                        , string redirectUri
+                                                        , string responseType
+                                                        , string responseMode
+                                                        , string maxAge
+                                                        , string state = null
+                                                        , string prompt=null)
         {
             string nonce = Guid.NewGuid().ToString("N");
 
-            return OAuth2Client.CreateUrl(GenerateAuthorizeEndpoint(authority), clientId, scope, redirectUri, responseType, responseMode, state, prompt, nonce);
+            return OAuth2Client.CreateUrl(GenerateAuthorizeEndpoint(authority), clientId, scope, redirectUri, responseType
+                            , responseMode, maxAge, state, prompt, nonce);
         }
 
         public OAuth2TokenResponse RequestAccessTokenCode(string code, Uri redirectUri, Dictionary<string, string> additionalProperties = null)
@@ -68,7 +77,16 @@ namespace AspnetWebMvc
             return endpoint;
         }
 
-        private static string CreateUrl(string endpoint, string clientId, string scope, string redirectUri, string responseType, string responseMode, string state = null, string prompt = null, string nonce = null)
+        private static string CreateUrl(string endpoint
+                                , string clientId
+                                , string scope
+                                , string redirectUri
+                                , string responseType
+                                , string responseMode
+                                , string maxAge
+                                , string state = null
+                                , string prompt = null
+                                , string nonce = null)
         {
             string str = string.Format("{0}?client_id={1}&scope={2}&redirect_uri={3}&response_type={4}"
                 , endpoint
@@ -76,6 +94,10 @@ namespace AspnetWebMvc
                 , ApplicationSettings.UrlEncode(scope)
                 , ApplicationSettings.UrlEncode(redirectUri)
                 , ApplicationSettings.UrlEncode(responseType));
+            if (!string.IsNullOrEmpty(maxAge))
+            {
+                str = string.Format("{0}&max_age={1}", str, ApplicationSettings.UrlEncode(maxAge));
+            }
             if (!string.IsNullOrEmpty(responseMode))
             {
                 str = string.Format("{0}&response_mode={1}", str, ApplicationSettings.UrlEncode(responseMode));
@@ -84,7 +106,6 @@ namespace AspnetWebMvc
             {
                 str = string.Format("{0}&state={1}", str, ApplicationSettings.UrlEncode(state));
             }
-               
             if (!string.IsNullOrWhiteSpace(prompt))
             {
                 str = string.Format("{0}&prompt={1}", str, ApplicationSettings.UrlEncode(prompt));

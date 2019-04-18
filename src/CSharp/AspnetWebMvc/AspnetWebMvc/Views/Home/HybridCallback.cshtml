@@ -35,8 +35,8 @@
                 }
 
                 if (params.error) {
-                    log("#authorizationRequestResult", "errorId", "error: ", params.error);
-                    log("#authorizationRequestResult", "errorDescriptionId", "error description: ", params.error_description);
+                    log("#authorizationRequestResult", "errorId", "Error: ", params.error);
+                    log("#authorizationRequestResult", "errorDescriptionId", "Error description: ", params.error_description);
                     return;
                 }
                 var code = params.code;

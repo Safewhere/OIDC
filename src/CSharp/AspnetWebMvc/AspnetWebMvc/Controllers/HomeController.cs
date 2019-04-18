@@ -56,7 +56,8 @@ namespace AspnetWebMvc.Controllers
         {
             ViewBag.Message = "Code received.";
             ViewBag.ReturnUrl = ApplicationSettings.HybridRedirectUri;
- 
+            ViewBag.ClientId = ApplicationSettings.HybridClientId;
+
             return View("HybridCallback");
         }
 

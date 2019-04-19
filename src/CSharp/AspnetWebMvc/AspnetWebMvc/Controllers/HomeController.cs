@@ -20,6 +20,7 @@ namespace AspnetWebMvc.Controllers
                 ApplicationSettings.HybridRedirectUri, 
                 ApplicationSettings.HybridResponseType,
                 string.Empty,
+                ApplicationSettings.MaxAge,
                 ApplicationSettings.State, 
                 ApplicationSettings.Prompt);
 
@@ -30,6 +31,7 @@ namespace AspnetWebMvc.Controllers
                 ApplicationSettings.CodeFlowRedirectUri,
                 "code",
                 ApplicationSettings.ResponseMode,
+                ApplicationSettings.MaxAge,
                 ApplicationSettings.State,
                 ApplicationSettings.Prompt);
 
@@ -40,6 +42,7 @@ namespace AspnetWebMvc.Controllers
                ApplicationSettings.ImplicitRedirectUri,
                ApplicationSettings.ImplicitResponseType,
                ApplicationSettings.ResponseMode,
+               ApplicationSettings.MaxAge,
                ApplicationSettings.State,
                ApplicationSettings.Prompt);
 
@@ -53,7 +56,8 @@ namespace AspnetWebMvc.Controllers
         {
             ViewBag.Message = "Code received.";
             ViewBag.ReturnUrl = ApplicationSettings.HybridRedirectUri;
- 
+            ViewBag.ClientId = ApplicationSettings.HybridClientId;
+
             return View("HybridCallback");
         }
 

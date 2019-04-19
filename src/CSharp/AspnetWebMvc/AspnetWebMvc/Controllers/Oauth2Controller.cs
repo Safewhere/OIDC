@@ -19,10 +19,7 @@ namespace AspnetWebMvc.Controllers
         [HttpPost]
         public ActionResult GetToken(TokenRequest tokenRequest)
         {
-            var client = new OAuth2Client(
-                new Uri(ApplicationSettings.Authority),
-                tokenRequest.ClientId,
-                ApplicationSettings.ClientSecret);
+            var client = new OAuth2Client(tokenRequest.ClientId);
 
             var response = client.RequestAccessTokenCode(
                 tokenRequest.Code,
@@ -34,10 +31,7 @@ namespace AspnetWebMvc.Controllers
         [HttpPost]
         public ActionResult RenewToken(TokenRequest tokenRequest)
         {
-            var client = new OAuth2Client(
-                new Uri(ApplicationSettings.Authority),
-                tokenRequest.ClientId,
-                ApplicationSettings.ClientSecret);
+            var client = new OAuth2Client(tokenRequest.ClientId);
             var response = client.RequestAccessTokenRefreshToken(tokenRequest.Code);
             return Json(new { success = true, response });
         }

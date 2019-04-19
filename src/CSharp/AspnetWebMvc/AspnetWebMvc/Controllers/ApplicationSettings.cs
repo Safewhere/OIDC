@@ -40,6 +40,21 @@ namespace OAuth2ClientSamples.Controllers
                 return ConfigurationManager.AppSettings["IdentifyOauth2:ClientSecret"];
             }
         }
+        public static string ClientCertificate
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IdentifyOauth2:ClientCertificate"];
+            }
+        }
+        public static string AuthenticationType
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IdentifyOauth2:AuthenticationType"];
+            }
+        }
+
         public static string HybridResponseType
         {
             get

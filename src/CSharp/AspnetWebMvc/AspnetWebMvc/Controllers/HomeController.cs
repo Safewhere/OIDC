@@ -52,6 +52,12 @@ namespace AspnetWebMvc.Controllers
             return View();
         }
 
+        public ActionResult Jwks()
+        {
+            var jwks = System.IO.File.ReadAllText(Server.MapPath(@"~/App_Data/jwks.json"));
+            return Content(jwks, "application/json");
+        }
+
         public ActionResult HybridCallback(string Code)
         {
             ViewBag.Message = "Code received.";

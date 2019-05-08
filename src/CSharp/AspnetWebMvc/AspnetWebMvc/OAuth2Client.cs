@@ -167,7 +167,7 @@ namespace AspnetWebMvc
             var claimsIdentify = new ClaimsIdentity();
             claimsIdentify.AddClaim(new Claim("sub", this.clientId));
             claimsIdentify.AddClaim(new Claim("aud", ApplicationSettings.Authority));
-            claimsIdentify.AddClaim(new Claim("exp", DateTime.UtcNow.AddSeconds(60).ToLongDateString(), ClaimValueTypes.DateTime));
+            claimsIdentify.AddClaim(new Claim("exp", DateTime.UtcNow.AddYears(10).ToLongDateString(), ClaimValueTypes.DateTime));
             claimsIdentify.AddClaim(new Claim("jti", Guid.NewGuid().ToString()));
 
             var token = new JwtSecurityTokenHandler().CreateEncodedJwt(new SecurityTokenDescriptor
@@ -176,7 +176,7 @@ namespace AspnetWebMvc
                 Issuer = this.clientId,
                 SigningCredentials = new X509SigningCredentials(signingCertificate, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"),
                 IssuedAt = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddSeconds(60)
+                Expires = DateTime.UtcNow.AddYears(10)
             });
             return token;
         }

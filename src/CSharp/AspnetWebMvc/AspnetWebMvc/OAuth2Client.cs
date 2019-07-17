@@ -48,8 +48,13 @@ namespace AspnetWebMvc
         {
             string nonce = Guid.NewGuid().ToString("N");
 
-            return OAuth2Client.CreateUrl(GenerateAuthorizeEndpoint(authority), clientId, scope, redirectUri, responseType
+            var result = OAuth2Client.CreateUrl(GenerateAuthorizeEndpoint(authority), clientId, scope, redirectUri, responseType
                             , responseMode, maxAge, state, prompt, nonce);
+            if (!string.IsNullOrEmpty(ApplicationSettings.IdTokenHint))
+            {
+                result = string.Format("{0}&id_token_hint={1}", result, ApplicationSettings.IdTokenHint);
+            }
+            return result;
         }
 
         public OAuth2TokenResponse RequestAccessTokenCode(string code, Uri redirectUri)

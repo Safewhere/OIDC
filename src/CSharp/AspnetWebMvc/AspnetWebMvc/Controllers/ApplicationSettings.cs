@@ -47,11 +47,20 @@ namespace OAuth2ClientSamples.Controllers
                 return ConfigurationManager.AppSettings["IdentifyOauth2:ClientCertificate"];
             }
         }
+
         public static string AuthenticationType
         {
             get
             {
                 return ConfigurationManager.AppSettings["IdentifyOauth2:AuthenticationType"];
+            }
+        }
+
+        public static string IdTokenHint
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IdentifyOauth2:IdTokenHint"];
             }
         }
 

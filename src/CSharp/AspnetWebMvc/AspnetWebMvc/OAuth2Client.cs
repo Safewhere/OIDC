@@ -171,7 +171,7 @@ namespace AspnetWebMvc
             var signingCertificate = LoadCertificate(StoreName.My, StoreLocation.LocalMachine, ApplicationSettings.ClientCertificate);
             var claimsIdentify = new ClaimsIdentity();
             claimsIdentify.AddClaim(new Claim("sub", this.clientId));
-            claimsIdentify.AddClaim(new Claim("aud", ApplicationSettings.Authority + "token.idp"));
+            claimsIdentify.AddClaim(new Claim("aud", ApplicationSettings.Authority + "/token.idp"));
             claimsIdentify.AddClaim(new Claim("exp", DateTime.UtcNow.AddYears(10).ToLongDateString(), ClaimValueTypes.DateTime));
             claimsIdentify.AddClaim(new Claim("jti", Guid.NewGuid().ToString()));
 

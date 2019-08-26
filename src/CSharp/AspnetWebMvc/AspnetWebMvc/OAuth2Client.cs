@@ -4,6 +4,7 @@
  */
 
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OAuth2ClientSamples.Controllers;
 using System;
@@ -60,15 +61,14 @@ namespace AspnetWebMvc
         public OAuth2TokenResponse RequestAccessTokenCode(string code, Uri redirectUri)
         {
             HttpResponseMessage result = this._client.PostAsync(GenerateTokenEndpoint(this.uri.AbsoluteUri), (HttpContent)this.GetTokenPostContent(code, redirectUri)).Result;
-            result.EnsureSuccessStatusCode();
-            return this.CreateResponseFromJson(JObject.Parse(result.Content.ReadAsStringAsync().Result));
+            var response = JsonConvert.DeserializeObject<OAuth2TokenResponse>(result.Content.ReadAsStringAsync().Result);
+            return response;
         }
 
         public OAuth2TokenResponse RequestAccessTokenRefreshToken(string refreshToken)
         {
             HttpResponseMessage result = this._client.PostAsync(GenerateTokenEndpoint(this.uri.AbsoluteUri), (HttpContent)this.ExchangeTokenFormPostContent(refreshToken)).Result;
-            result.EnsureSuccessStatusCode();
-            return this.CreateResponseFromJson(JObject.Parse(result.Content.ReadAsStringAsync().Result));
+            return JsonConvert.DeserializeObject<OAuth2TokenResponse>(result.Content.ReadAsStringAsync().Result);
         }
 
         private static string GenerateAuthorizeEndpoint(string authority)
@@ -120,20 +120,6 @@ namespace AspnetWebMvc
                 str = string.Format("{0}&nonce={1}", str, ApplicationSettings.UrlEncode(nonce));
             }
             return str;
-        }
-
-        private OAuth2TokenResponse CreateResponseFromJson(JObject json)
-        {
-            OAuth2TokenResponse accessTokenResponse = new OAuth2TokenResponse()
-            {
-                Access_Token = json["access_token"].ToString(),
-                Id_Token = json["id_token"].ToString(),
-                TokenType = json["token_type"].ToString(),
-                ExpiresIn = int.Parse(json["expires_in"].ToString())
-            };
-            if (json["refresh_token"] != null)
-                accessTokenResponse.Refresh_Token = json["refresh_token"].ToString();
-            return accessTokenResponse;
         }
 
         protected virtual FormUrlEncodedContent ExchangeTokenFormPostContent(string refreshToken)

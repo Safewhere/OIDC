@@ -36,10 +36,7 @@ function GetToken(code, clientId, returnUrl) {
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-            $("#tokenRequestResult").html("");
-            log("#tokenRequestResult", "accesstokenid", "Access token obtained: ", data.response.Access_Token);
-            log("#tokenRequestResult", "idtokenid", "Id token obtained: ", data.response.Id_Token);
-            log("#tokenRequestResult", "refreshtokenid", "Refresh token obtained: ", data.response.Refresh_Token);
+            displayResult(data);
         },
         error: function () {
         }
@@ -61,12 +58,21 @@ function ExchangeToken() {
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-            $("#tokenRequestResult").html("");
-            log("#tokenRequestResult", "accesstokenid", "Access token obtained: ", data.response.Access_Token);
-            log("#tokenRequestResult", "idtokenid", "Id token obtained: ", data.response.Id_Token);
-            log("#tokenRequestResult", "refreshtokenid", "Refresh token obtained: ", data.response.Refresh_Token);
+            displayResult(data);
         },
         error: function () {
         }
     });
+}
+
+function displayResult(data) {
+    $("#tokenRequestResult").html("");
+    if (data.response.Error === null) {
+        log("#tokenRequestResult", "accesstokenid", "Access token obtained: ", data.response.Access_Token);
+        log("#tokenRequestResult", "idtokenid", "Id token obtained: ", data.response.Id_Token);
+        log("#tokenRequestResult", "refreshtokenid", "Refresh token obtained: ", data.response.Refresh_Token);
+    } else {
+        log("#tokenRequestResult", "error", "Error: ", data.response.Error);
+        log("#tokenRequestResult", "errorDescription", "Error description: ", data.response.Error_Description);
+    }
 }

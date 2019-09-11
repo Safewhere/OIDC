@@ -26,13 +26,10 @@ namespace WebAppNetCore.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
         private IConfiguration configuration;
-        public AccountController(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public AccountController(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this._httpContextAccessor = httpContextAccessor;
         }
         //
         // GET: /Account/SignIn

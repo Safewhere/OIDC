@@ -11,14 +11,44 @@
 
     <script language="JavaScript" type="text/javascript">
         var stat = "unchanged";
+        var shouldLogout = false;
+        var callback = false;
 
+        var action = "@ViewData["Action"]";
+        if (action == "ReauthenticationCallBack") {
+            callback = true;
+        };
+        
         var client_id = "@Html.Raw(ViewData["clientId"])";
         var session_state = "@Html.Raw(ViewData["session_state"])";
         var mes = client_id + "########" + session_state;
 
         var opDomain = "@ViewData["OPDomain"]";
 
+        if (callback == true) {
+            extractCallback();
+        }
+
         var checkSessionInterval = null;
+
+        function extractCallback() {
+            var params = {},
+                queryString = location.hash.substring(1),
+                regex = /([^&=]+)=([^&]*)/g,
+                m;
+            while (m = regex.exec(queryString)) {
+                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+
+            if (params.error) {
+                shouldLogout = true;
+                return;
+            }
+            var idtoken = params.id_token;            
+            window.parent.document.getElementById('notice').innerHTML = "Callback id_token..." + idtoken;
+            session_state = params.session_state;
+            mes = client_id + "########" + session_state;
+        }
 
         function check_session() {
             var win = window.parent.document.getElementById("opIFrame").contentWindow;
@@ -26,10 +56,14 @@
         }
 
         function setTimer() {
-            reauthenticate();
+            if (shouldLogout) {
+                window.parent.location = "@Url.Action("SignOut", "Account")";
+                return;
+            }
             window.parent.document.getElementById('notice').innerHTML = "Checking OP Session Status...";
-            //check_session();
-            checkSessionInterval = setInterval("check_session()", 3 * 1000);
+            setTimeout(function () {
+                checkSessionInterval = setInterval("check_session()", 3 * 1000);
+            }, 3000);
         }
 
         if (window.addEventListener) {
@@ -52,20 +86,10 @@
             }
             //do nothing
         }
+
         function reauthenticate() {
-            $.ajax({
-                url: '@Url.Action("Reauthenticate", "Account")',
-                type: 'POST',
-                success: function (data) {
-                    window.parent.document.getElementById('notice').innerHTML = "reauthentication is done" + data.authorizationResult.session;
-                    if (data.authorizationResult.isLoggedOut) {
-                        alert("logged out");
-                        //window.parent.location = "@Url.Action("SignOut", "Account")";
-                    }
-                },
-                error: function () {
-                }
-            });
+            window.parent.document.getElementById('notice').innerHTML = "start reauthentication";
+            window.location= "@Html.Raw(ViewData["Reauthenticate"])";
         }
     </script>
 </head>

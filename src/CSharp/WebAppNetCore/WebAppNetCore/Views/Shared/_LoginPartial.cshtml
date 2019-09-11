@@ -9,9 +9,13 @@
 
         <li><a href="@ViewData["EditMyProfileUri"]?origin=@ViewData["Origin"]" class="trigger">Edit My Profile</a></li>
         <li><a asp-area="" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
+        <li><a href="@ViewData["Reauthenticate"]">Reauthenticate - redirect</a></li>
+
+
+        <li>@Html.ActionLink("Reauthentication", "Reauthenticate", "Account")</li>
     </ul>
     <iframe frameborder="0" allowtransparency="true" height="0" width="0" src="@Url.Action("RPIFrame", "Account")"></iframe>
-    <iframe frameborder="0" allowtransparency="true" height="0" width="0" src='@ViewData["CheckSessionIframeUri"]' id="opIFrame"></iframe>
+    <iframe frameborder="0" allowtransparency="true" height="0" width="0" src='@ViewData["CheckSessionIframeUri"]' id="opIFrame"></iframe>    
 }
 else
 {

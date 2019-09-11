@@ -31,9 +31,12 @@ namespace WebAppNetCore.Controllers
             ViewData["Origin"] = $"{Request.Scheme}://{Request.Host.Value}";
             ViewData["CheckSessionIframeUri"] = Configuration.CheckSessionIframeUri();
 
+            var authorizationRequest = OpenIdConnectHelper.GenerateReauthenticateUri(HttpContext, Configuration);
+            ViewData["Reauthenticate"] = authorizationRequest;
+
             return View();
         }
-
+       
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
@@ -51,6 +54,6 @@ namespace WebAppNetCore.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        }    
     }
 }

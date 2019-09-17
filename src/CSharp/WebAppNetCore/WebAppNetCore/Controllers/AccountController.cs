@@ -1,37 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using HtmlAgilityPack;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 
 namespace WebAppNetCore.Controllers
 {
     public class AccountController : Controller
     {
+        private HttpClient httpClient;
+
         private IConfiguration configuration;
         public AccountController(IConfiguration configuration)
         {
             this.configuration = configuration;
+            this.httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(configuration.ClaimsIssuer())
+            };
         }
-        //
+
         // GET: /Account/SignIn
         [HttpGet]
         public IActionResult SignIn()
@@ -40,7 +32,6 @@ namespace WebAppNetCore.Controllers
                 new AuthenticationProperties { RedirectUri = "/" }, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
-        //
         // GET: /Account/SignOut
         [HttpGet]
         public IActionResult SignOut()
@@ -51,7 +42,6 @@ namespace WebAppNetCore.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
-        //
         // GET: /Account/SignedOut
         [HttpGet]
         public IActionResult SignedOut()
@@ -65,19 +55,19 @@ namespace WebAppNetCore.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult SignedOutCallback()
+        {
+            //Local sign out
+            HttpContext.SignOutAsync();
+            return RedirectToAction("SignedOut", "Account");
+        }
+
         public IActionResult ReauthenticationCallBack()
         {
             InitializeDataForRPFrame();
             ViewData["Action"] = "ReauthenticationCallBack";
             return View("RPIFrame");
-        }
-
-        //
-        // GET: /Account/AccessDenied
-        [HttpGet]
-        public IActionResult AccessDenied()
-        {
-            return View();
         }
 
         public ActionResult RPIFrame()
@@ -98,10 +88,5 @@ namespace WebAppNetCore.Controllers
             ViewData["Reauthenticate"] = authorizationRequest;
         }
 
-    }
-    public class AuthorizationResult
-    {
-        public bool IsLoggedOut { get; set; }
-        public string Session { get; set; }
     }
 }

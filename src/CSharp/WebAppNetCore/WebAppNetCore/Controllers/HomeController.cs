@@ -34,6 +34,12 @@ namespace WebAppNetCore.Controllers
             var authorizationRequest = OpenIdConnectHelper.GenerateReauthenticateUri(HttpContext, Configuration);
             ViewData["Reauthenticate"] = authorizationRequest;
 
+            ViewData["EndSessionUri"] = Configuration.EndSessionEndpoint();
+            var idToken = HttpContext.User.Claims.Where(x => x.Type == OpenIdConnectConstants.IdToken).Select(x => x.Value).FirstOrDefault();
+            ViewData["IdTokenHint"] = idToken;
+
+            var callbackUrl = Url.Action("SignedOutCallback", "Account", values: null, protocol: Request.Scheme);
+            ViewData["RedirectUrl"] = callbackUrl;
             return View();
         }
        

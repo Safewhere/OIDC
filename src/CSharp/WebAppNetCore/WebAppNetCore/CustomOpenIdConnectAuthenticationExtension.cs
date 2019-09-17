@@ -49,6 +49,7 @@ namespace WebAppNetCore
                 TokenEndpoint = configuration.TokenEndpoint(),
                 UserInfoEndpoint = configuration.UserInfoEndpoint(),
                 EndSessionEndpoint = configuration.EndSessionEndpoint(),
+                
                 HttpLogoutSupported = true,
 
             };
@@ -107,9 +108,6 @@ namespace WebAppNetCore
                                 identity.AddClaim(claim);
                             }
                             identity.AddClaim(new Claim(OpenIdConnectConstants.IdToken, idToken));
-                            //AddClaim(identity, token, ClaimsPrincipalExtension.UserIdClaimType);
-                            //AddClaim(identity, token, ClaimsPrincipalExtension.RestApiRoleClaimType);
-                            //AddClaim(identity, token, ClaimsPrincipalExtension.AnyIDRoleClaimType);
                         }
                     }
                     await Task.FromResult(0);
@@ -131,14 +129,6 @@ namespace WebAppNetCore
             connectOptions.ProtocolValidator.RequireNonce = bool.Parse(configuration["OpenIdConnectOptions:RequireNonce"]);
             connectOptions.TokenValidationParameters.NameClaimType = ClaimTypes.NameIdentifier;
             connectOptions.BackchannelHttpHandler = HttpClientHandlerProvider.Create();
-        }
-        private static void AddClaim(ClaimsIdentity identity, JwtSecurityToken token, string claimType)
-        {
-            var claim = token.Claims.FirstOrDefault(c => c.Type == claimType);
-            if (!identity.Claims.Any(c => c.Type == claimType) && claim != null)
-            {
-                identity.AddClaim(claim);
-            }
         }
     }
 }

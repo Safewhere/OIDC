@@ -157,22 +157,28 @@ namespace AspnetWebMvc
                 claimsIdentify.AddClaim(new Claim("state", state));
                 claimsIdentify.AddClaim(new Claim("prompt", prompt));
                 claimsIdentify.AddClaim(new Claim("nonce", nonce));
-                var securityTokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = claimsIdentify,
-                    Issuer = clientId,
-                    IssuedAt = DateTime.UtcNow,
-                    Expires = DateTime.UtcNow.AddYears(10),
-                    Audience = endpoint
-                };
 
+                string token;
                 if (ApplicationSettings.SignRequestObject == "true")
                 {
+                    var securityTokenDescriptor = new SecurityTokenDescriptor
+                    {
+                        Subject = claimsIdentify,
+                        Issuer = clientId,
+                        IssuedAt = DateTime.UtcNow,
+                        Expires = DateTime.UtcNow.AddYears(10),
+                        Audience = endpoint
+                    };
                     var signingCertificate = LoadCertificate(StoreName.My, StoreLocation.LocalMachine, ApplicationSettings.ClientCertificate);
                     securityTokenDescriptor.SigningCredentials = new X509SigningCredentials(signingCertificate, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
+                    token = new JwtSecurityTokenHandler().CreateEncodedJwt(securityTokenDescriptor);
+                }
+                else
+                {
+                    var jwtSecurityToken = new JwtSecurityTokenHandler().CreateJwtSecurityToken(clientId, endpoint, claimsIdentify, DateTime.UtcNow, DateTime.UtcNow.AddYears(10), DateTime.UtcNow);
+                    token = "eyJhbGciOiJub25lIn0" + "." + jwtSecurityToken.EncodedPayload + ".";
                 }
 
-                var token = new JwtSecurityTokenHandler().CreateEncodedJwt(securityTokenDescriptor);
                 str += "&request=" + token;
             }
 

@@ -61,9 +61,19 @@ namespace WebAppNetCore
             return new Uri(configuration["OpenIdConnectOptions:EditMyProfileUri"]);
         }
 
+        public static bool SessionManagementEnabled(this IConfiguration configuration)
+        {
+            return configuration.CheckSessionIframeUri() != null;
+        }
+
         public static Uri CheckSessionIframeUri(this IConfiguration configuration)
         {
-            return new Uri(configuration["OpenIdConnectOptions:CheckSessionIframeUri"]);
+            var sessionUri = configuration["OpenIdConnectOptions:CheckSessionIframeUri"];
+            if (string.IsNullOrEmpty(sessionUri))
+            {
+                return null;
+            }
+            return new Uri(sessionUri);
         }
     }
 }

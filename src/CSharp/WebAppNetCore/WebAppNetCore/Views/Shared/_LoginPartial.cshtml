@@ -10,17 +10,23 @@
         </li>
         <li><a href="@ViewData["EditMyProfileUri"]?origin=@ViewData["Origin"]" class="trigger">Edit My Profile</a></li>
         <li><a asp-area="" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
-        <li class="navbar-text">
-            <form class="nav navbar-nav navbar-left" action="@ViewData["EndSessionUri"]" enctype="application/x-www-form-urlencoded" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id_token_hint" value="@ViewData["IdTokenHint"]" />
-                <input type="hidden" name="post_logout_redirect_uri" value="@ViewData["RedirectUrl"]" />
-                <input name="Authorize" class="postlogoutbutton" type="submit" value="PostLogout" />
-            </form>
-        </li>
+        @if (ViewData["EnableSessionManagement"] == "Yes")
+        {
+            <li class="navbar-text">
+                <form class="nav navbar-nav navbar-left" action="@ViewData["EndSessionUri"]" enctype="application/x-www-form-urlencoded" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id_token_hint" value="@ViewData["IdTokenHint"]" />
+                    <input type="hidden" name="post_logout_redirect_uri" value="@ViewData["RedirectUrl"]" />
+                    <input name="Authorize" class="postlogoutbutton" type="submit" value="PostLogout" />
+                </form>
+            </li>
+        }
     </ul>
-    <iframe frameborder="0" allowtransparency="true" height="0" width="0" src="@Url.Action("RPIFrame", "Account")"></iframe>
-    <iframe frameborder="0" allowtransparency="true" height="0" width="0" src='@ViewData["CheckSessionIframeUri"]' id="opIFrame"></iframe>    
+    @if (ViewData["EnableSessionManagement"] == "Yes")
+    {
+        <iframe frameborder="0" allowtransparency="true" height="0" width="0" src="@Url.Action("RPIFrame", "Account")"></iframe>
+        <iframe frameborder="0" allowtransparency="true" height="0" width="0" src='@ViewData["CheckSessionIframeUri"]' id="opIFrame"></iframe>
+    }
 }
 else
 {

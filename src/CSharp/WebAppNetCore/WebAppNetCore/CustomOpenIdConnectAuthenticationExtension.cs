@@ -114,7 +114,7 @@ namespace WebAppNetCore
                 }
             };
 
-            var scopes = configuration["OpenIdConnectOptions:Scope"]
+            var scopes = configuration.Scope()
                 .Split(new char[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             connectOptions.Scope.Clear();
             foreach (var scope in scopes)
@@ -125,8 +125,8 @@ namespace WebAppNetCore
             connectOptions.TokenValidationParameters.IssuerSigningKey = new X509SecurityKey(configuration.IssuerSigningKey());
             connectOptions.TokenValidationParameters.ValidateAudience = true;   // by default, when we don't explicitly set ValidAudience, it is set to ClientId
             connectOptions.TokenValidationParameters.ValidateIssuer = true;
-            connectOptions.TokenValidationParameters.ValidIssuer = configuration["OpenIdConnectOptions:ClaimsIssuer"];
-            connectOptions.ProtocolValidator.RequireNonce = bool.Parse(configuration["OpenIdConnectOptions:RequireNonce"]);
+            connectOptions.TokenValidationParameters.ValidIssuer = configuration.ClaimsIssuer();
+            connectOptions.ProtocolValidator.RequireNonce = configuration.RequireNonce();
             connectOptions.TokenValidationParameters.NameClaimType = ClaimTypes.NameIdentifier;
             connectOptions.BackchannelHttpHandler = HttpClientHandlerProvider.Create();
         }

@@ -65,5 +65,20 @@ namespace WebAppNetCore
         {
             return new Uri(configuration["OpenIdConnectOptions:CheckSessionIframeUri"]);
         }
+
+        public static bool RequireNonce(this IConfiguration configuration)
+        {
+            return bool.Parse(configuration["OpenIdConnectOptions:RequireNonce"]);
+        }
+
+        public static bool EnableSessionManagement(this IConfiguration configuration)
+        {
+            var enableSessionManagement = configuration["OpenIdConnectOptions:EnableSessionManagement"];
+            if (string.IsNullOrEmpty(enableSessionManagement))
+            {
+                return false;
+            }
+            return bool.Parse(enableSessionManagement);
+        }
     }
 }

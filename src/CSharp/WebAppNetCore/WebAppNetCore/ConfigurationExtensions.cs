@@ -84,21 +84,15 @@ namespace WebAppNetCore
         public static bool EnableSessionManagement(this IConfiguration configuration)
         {
             var enableSessionManagement = configuration["OpenIdConnectOptions:EnableSessionManagement"];
-            if (string.IsNullOrEmpty(enableSessionManagement))
-            {
-                return false;
-            }
-            return bool.Parse(enableSessionManagement);
+            bool.TryParse(enableSessionManagement, out bool result);
+            return result;
         }
 
         public static bool EnablePostLogout(this IConfiguration configuration)
         {
             var enablePostLogout = configuration["OpenIdConnectOptions:EnablePostLogout"];
-            if (string.IsNullOrEmpty(enablePostLogout))
-            {
-                return false;
-            }
-            return bool.Parse(enablePostLogout);
+            bool.TryParse(enablePostLogout, out bool result);
+            return result;
         }
     }
 }

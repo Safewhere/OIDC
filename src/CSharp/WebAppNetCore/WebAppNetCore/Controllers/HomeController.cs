@@ -41,11 +41,17 @@ namespace WebAppNetCore.Controllers
             ViewData["RedirectUrl"] = callbackUrl;
 
             ViewData["EnableSessionManagement"] = "No";
+            ViewData["EnablePostLogout"] = "No";
 
             if (Configuration.EnableSessionManagement())
             {
                 ViewData["EnableSessionManagement"] = "Yes";
                 ViewData["CheckSessionIframeUri"] = Configuration.CheckSessionIframeUri();
+            }
+
+            if (Configuration.EnablePostLogout())
+            {
+                ViewData["EnablePostLogout"] = "Yes";
             }
             return View();
         }

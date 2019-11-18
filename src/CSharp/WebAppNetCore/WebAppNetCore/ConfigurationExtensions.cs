@@ -90,5 +90,15 @@ namespace WebAppNetCore
             }
             return bool.Parse(enableSessionManagement);
         }
+
+        public static bool EnablePostLogout(this IConfiguration configuration)
+        {
+            var enablePostLogout = configuration["OpenIdConnectOptions:EnablePostLogout"];
+            if (string.IsNullOrEmpty(enablePostLogout))
+            {
+                return false;
+            }
+            return bool.Parse(enablePostLogout);
+        }
     }
 }

@@ -10,7 +10,7 @@
         </li>
         <li><a href="@ViewData["EditMyProfileUri"]?origin=@ViewData["Origin"]" class="trigger">Edit My Profile</a></li>
         <li><a asp-area="" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
-        @if (ViewData["EnableSessionManagement"] == "Yes")
+        @if (ViewData["EnablePostLogout"] == "Yes")
         {
             <li class="navbar-text">
                 <form class="nav navbar-nav navbar-left" action="@ViewData["EndSessionUri"]" enctype="application/x-www-form-urlencoded" method="post">

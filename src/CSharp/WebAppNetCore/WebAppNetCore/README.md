@@ -24,7 +24,8 @@ There are some more advanced test cases which can be enabled by simple configura
 Even though a RP-initiated logout request must be made via GET, Identity version 5.6 is extended to either accept POST logout request to allow flowing large logout payloads. 
 
 ++ Client configuration
-- Edit "appsettings.json", change setting EnablePostLogout to "True"
+- Edit "appsettings.json", change setting EnablePostLogout to "True". This option will enable button "PostLogout" as following image
+![post logout](images/postlogout.png)
 
 ++ Identify configuration
 -- Change "OpenID Connect logout redirect URL" to "https://localhost:44307/Account/SignedOutCallback"

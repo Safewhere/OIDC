@@ -1,0 +1,89 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<style>
+.token-box {
+    word-break: break-all;
+    white-space: pre-wrap;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 8px;
+    margin-bottom: 10px;
+    font-family: monospace;
+    max-width: 100%;
+}
+.api-result {
+    margin-top: 20px;
+    padding: 8px;
+    background: #e9ecef;
+    border: 1px solid #ccc;
+    min-height: 32px;
+}
+.cert-input {
+    width: 100%;
+    min-height: 40px;
+    font-family: monospace;
+    margin-bottom: 10px;
+}
+</style>
+
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <h2>Welcome, @User.Identity.Name!</h2>
+    <p>You are logged in via OIDC with mTLS token endpoint.</p>
+    <div>
+        <strong>Access Token:</strong>
+        <div class="token-box" id="accessToken">@Model.AccessToken</div>
+    </div>
+    <div>
+        <strong>Identity Token:</strong>
+        <div class="token-box" id="identityToken">@Model.IdentityToken</div>
+    </div>
+    <hr />
+    <button id="callApiBtn" type="button">Call HelloWorld API</button>
+    <br />
+    <div class="api-result" id="apiResult"></div>
+    <br />
+    <form method="post" asp-page="/Login" asp-page-handler="Logout">
+        <button type="submit">Logout</button>
+    </form>
+}
+else
+{
+    <a href="/Login">Login</a>
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('callApiBtn');
+        if (btn) {
+            btn.addEventListener('click', async function() {
+                const apiResult = document.getElementById('apiResult');
+                apiResult.textContent = 'Calling API...';
+                try {
+                    // Call the server-side proxy endpoint instead of calling the API directly
+                    const response = await fetch('/api/ApiProxy/helloworld', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin' // Include authentication cookies
+                    });
+                    
+                    if (response.ok) {
+                        const text = await response.text();
+                        apiResult.textContent = text;
+                    } else {
+                        const errorText = await response.text();
+                        apiResult.textContent = `Error: ${response.status} ${response.statusText} - ${errorText}`;
+                    }
+                } catch (err) {
+                    apiResult.textContent = 'Request failed: ' + err;
+                }
+            });
+        }
+    });
+</script>

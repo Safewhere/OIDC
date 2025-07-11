@@ -1,0 +1,6 @@
+@web_api_HostAddress = https://localhost:7102
+
+GET {{web_api_HostAddress}}/HelloWorld
+Accept: application/json
+
+###

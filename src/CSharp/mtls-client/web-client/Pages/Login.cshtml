@@ -1,0 +1,19 @@
+@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+<h2>Login</h2>
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <p>Welcome, @User.Identity.Name!</p>
+    <form method="post" asp-page-handler="Logout">
+        <button type="submit">Logout</button>
+    </form>
+}
+else
+{
+    <form method="post">
+        <button type="submit">Login with OIDC</button>
+    </form>
+}

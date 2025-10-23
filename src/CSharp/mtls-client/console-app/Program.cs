@@ -349,7 +349,7 @@ namespace console_app
                 WriteSuccess("HTTP Message Signatures configured successfully");
                 WriteData("Key ID", keyId);
                 WriteData("Implementation", "Custom RFC 9421 Implementation");
-                WriteData("Algorithm", "rsa-pss-sha256");
+                WriteData("Algorithm", Constants.SignatureAlgorithms.RsaPssSha512);
 
                 return client;
             }

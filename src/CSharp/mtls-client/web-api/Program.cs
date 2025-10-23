@@ -31,6 +31,7 @@ builder.Services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServe
 
 // Configure HTTP Message Signatures
 var enableHttpSignatures = builder.Configuration.GetValue<bool>("HttpSignatures:Enabled", false);
+var signatureMaxAgeSeconds = builder.Configuration.GetValue<int>("HttpSignatures:MaxAge", 300);
 
 // JWT authentication with certificate validation and cnf claim check
 var authority = builder.Configuration["Jwt:Authority"] ?? "";
@@ -296,7 +297,7 @@ if (enableHttpSignatures)
                 options.AlgorithmRequired =
                 options.TagRequired = true;
             options.MissingSignatureResponseStatus = 404;
-            options.MaxSignatureAge = TimeSpan.FromMinutes(5);
+            options.MaxSignatureAge = TimeSpan.FromSeconds(signatureMaxAgeSeconds);
 
             // Note: The default behavior should continue to next middleware
             // after successful verification. Do not set options.OnSignatureVerificationSucceeded!
@@ -311,18 +312,109 @@ if (enableHttpSignatures)
             options.OnSignatureVerificationFailed = (context, reason) =>
             {
                 Console.WriteLine($"Signature verification failed: {reason}");
+                
+                // Get HttpContext through service provider
+                var serviceProvider = builder.Services.BuildServiceProvider();
+                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                var httpContext = httpContextAccessor.HttpContext;
+                
+                if (httpContext != null)
+                {
+                    // Set error response for client
+                    httpContext.Response.StatusCode = 401;
+                    httpContext.Response.ContentType = "application/json";
+                    
+                    var errorResponse = new
+                    {
+                        error = "signature_verification_failed",
+                        error_description = $"HTTP Message Signature verification failed: {reason}",
+                        timestamp = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        details = new
+                        {
+                            path = httpContext.Request.Path.Value,
+                            method = httpContext.Request.Method,
+                            required_signatures = "HTTP Message Signatures per RFC 9421"
+                        }
+                    };
+                    
+                    var errorJson = JsonSerializer.Serialize(errorResponse, new JsonSerializerOptions { WriteIndented = true });
+                    return httpContext.Response.WriteAsync(errorJson);
+                }
+                
                 return Task.CompletedTask;
             };
 
             options.OnSignatureInputError = (error, context) =>
             {
-                Console.WriteLine("signature input error.");
+                Console.WriteLine($"Signature input error: {error}");
+                
+                // Get HttpContext through service provider
+                var serviceProvider = builder.Services.BuildServiceProvider();
+                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                var httpContext = httpContextAccessor.HttpContext;
+                
+                if (httpContext != null)
+                {
+                    // Set error response for client
+                    httpContext.Response.StatusCode = 400;
+                    httpContext.Response.ContentType = "application/json";
+                    
+                    var errorResponse = new
+                    {
+                        error = "signature_input_error",
+                        error_description = $"HTTP Message Signature input error: {error}",
+                        timestamp = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        details = new
+                        {
+                            path = httpContext.Request.Path.Value,
+                            method = httpContext.Request.Method,
+                            required_format = "HTTP Message Signatures per RFC 9421"
+                        }
+                    };
+                    
+                    var errorJson = JsonSerializer.Serialize(errorResponse, new JsonSerializerOptions { WriteIndented = true });
+                    return httpContext.Response.WriteAsync(errorJson);
+                }
+                
                 return Task.CompletedTask;
             };
 
             options.OnMissingSignatures = (context) =>
             {
                 Console.WriteLine("Missing signatures.");
+                
+                // Get HttpContext through service provider
+                var serviceProvider = builder.Services.BuildServiceProvider();
+                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                var httpContext = httpContextAccessor.HttpContext;
+                
+                if (httpContext != null)
+                {
+                    // Set error response for client
+                    httpContext.Response.StatusCode = 401;
+                    httpContext.Response.ContentType = "application/json";
+                    
+                    // Add WWW-Authenticate header to indicate signature requirements
+                    httpContext.Response.Headers["WWW-Authenticate"] = "Signature realm=\"API\", algorithm=\"rsa-pss-sha512\"";
+                    
+                    var errorResponse = new
+                    {
+                        error = "missing_signature",
+                        error_description = "HTTP Message Signature is required but not provided",
+                        timestamp = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        details = new
+                        {
+                            path = httpContext.Request.Path.Value,
+                            method = httpContext.Request.Method,
+                            required_headers = new[] { "Signature", "Signature-Input" },
+                            specification = "RFC 9421 - HTTP Message Signatures"
+                        }
+                    };
+                    
+                    var errorJson = JsonSerializer.Serialize(errorResponse, new JsonSerializerOptions { WriteIndented = true });
+                    return httpContext.Response.WriteAsync(errorJson);
+                }
+                
                 return Task.CompletedTask;
             };
         })

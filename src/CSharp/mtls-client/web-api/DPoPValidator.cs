@@ -256,8 +256,7 @@ namespace web_api
             try
             {
                 var jwk = JsonWebKey.Create(jwkJson);
-                using var sha256 = SHA256.Create();
-                var hash = sha256.ComputeHash(jwk.ComputeJwkThumbprint());
+                var hash = jwk.ComputeJwkThumbprint();
                 
                 // Return base64url-encoded thumbprint
                 return Base64UrlEncoder.Encode(hash);

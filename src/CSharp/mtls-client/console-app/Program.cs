@@ -253,7 +253,7 @@ namespace console_app
             HttpClient apiHttpClient;
             if (useHttpSignatures && rsaKey != null)
             {
-                var keyId = Base64UrlEncoder.Encode(SHA256.Create().ComputeHash(jsonWebKey.ComputeJwkThumbprint()));
+                var keyId = Base64UrlEncoder.Encode(jsonWebKey.ComputeJwkThumbprint());
                 // Create HTTP client with custom HTTP Message Signatures support
                 WriteInfo("Creating HTTP client with custom HTTP Message Signatures support");
                 apiHttpClient = CreateHttpClientWithSignatures(apiHandler, rsaKey, keyId);

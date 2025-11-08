@@ -452,7 +452,7 @@ static RSA? ExtractPublicKeyFromDPoP(HttpContext httpContext, out string keyId)
         // Create JsonWebKey from the embedded JWK
         var jsonWebKey = new JsonWebKey(jwkJson);
 
-        keyId = Base64UrlEncoder.Encode(SHA256.Create().ComputeHash(jsonWebKey.ComputeJwkThumbprint()));
+        keyId = Base64UrlEncoder.Encode(jsonWebKey.ComputeJwkThumbprint());
         return FromJwk(jsonWebKey);
     }
     return null;

@@ -25,6 +25,61 @@ Support **HTTP Message Signatures** per RFC 9421 for enhanced request integrity 
 - Calls the HelloWorld API endpoint using the access token and the same client certificate for mTLS.
 - Validates the API response to ensure successful authentication and authorization.
 
+### Invoke-MtlsClient.ps1 under powershell-script folder
+
+A PowerShell 5.1 script that replicates the functionality of the .NET `console app`
+
+It demonstrates:
+
+- **mTLS** client certificate authentication for token requests
+- **DPoP** (RFC 9449) proof-of-possession tokens
+- **HTTP Message Signatures** (RFC 9421) on API calls
+
+| Parameter  | Description |
+|---|---|
+| `Authority` | OAuth2 authorization server base URL, such as `https://identify.example.com/runtime/oauth2` |
+| `ClientId` | Client ID registered at the authority, such as `clientid_mTLS-console-app` |
+| `CertificatePath` | Full path to the mTLS client certificate, such as `C:\Temp\mTLS Testcertificate.pfx` |
+| `CertificatePassword` | Password for the .pfx file |
+| `ApiEndpoint` | Resource server endpoint to call, such as `https://localhost:7102/HelloWorld` |
+| `UseDPoP` | Enable DPoP proof tokens. Default is `$true`|
+| `DPoPAlg` | DPoP signing algorithm (`RS256`, `RS384`, `RS512`, `PS256`, `PS384`, `PS512`). Default is `PS256` |
+| `DPoPMethod` | HTTP method for the token-request DPoP proof. Default is `POST` |
+| `UseHttpSignatures` | Enable HTTP Message Signatures (RFC 9421) on the API call. Default is  `$false` |
+
+Sample:
+
+- Run with DPoP only (default)
+
+```powershell
+
+.\Invoke-MtlsClient.ps1 -Authority "https://identify01new.identify.safewhere.com/runtime/oauth2" `
+    -ClientId "clientid_mTLS-console-app" `
+    -CertificatePath "c:\Temp\mTLS Testcertificate.pfx" `
+    -CertificatePassword "Test!234" `
+    -ApiEndpoint "https://localhost:7102/HelloWorld" `
+    -UseDPoP $true `
+    -DPoPAlg "PS256" `
+    -UseHttpSignatures $false
+```
+
+![Sample 01](powershell-script/sample-01.png)
+
+- Run with DPoP + HTTP Message Signatures
+
+```powershell
+
+.\Invoke-MtlsClient.ps1 -Authority "https://identify01new.identify.safewhere.com/runtime/oauth2" `
+    -ClientId "clientid_mTLS-console-app" `
+    -CertificatePath "c:\Temp\mTLS Testcertificate.pfx" `
+    -CertificatePassword "Test!234" `
+    -ApiEndpoint "https://localhost:7102/HelloWorld" `
+    -UseDPoP $true `
+    -DPoPAlg "PS256" `
+    -UseHttpSignatures true
+```
+![Sample 02](powershell-script/sample-02.png)
+
 ### web-api (ASP.NET Core Web API with DPoP Validation)
 - Secured with JWT Bearer authentication.
 - Comprehensive DPoP proof validation according to RFC 9449 including:
